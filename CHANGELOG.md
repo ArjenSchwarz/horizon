@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Dashboard implementation (Phase 8):
+  - `dashboard/index.html` - Main HTML structure with:
+    - Header with logo, machine name, and sync status indicator
+    - API key setup form for initial configuration
+    - Stats cards row (This Week, Today, Top Agent, Streak)
+    - Weekly Activity panel with daily bar chart
+    - Projects panel with selectable list
+    - Session Detail panel showing sessions for selected project
+    - Agents This Week bar chart panel
+    - Agent x Project breakdown panel
+    - Offline indicator and tooltip components
+    - Font imports for IBM Plex Mono and Outfit
+    - Covers requirements [8.1]-[8.5], [9.1]-[9.6], [10.1]-[10.5], [11.1]-[11.5], [12.1]-[12.4]
+  - `dashboard/styles.css` - Ground Control theme with:
+    - Dark background (#0a0c10) and amber accents (#e5a84b)
+    - IBM Plex Mono for body/code, Outfit for headings
+    - Agent badge colors: Claude (#d97706), Cursor (#8b5cf6), Copilot (#3b82f6), Aider (#10b981)
+    - Project colors for weekly activity bar segments
+    - Responsive layout for tablet and mobile viewports
+    - Styled panels, cards, bars, badges, and interactive elements
+    - Custom scrollbar styling
+  - `dashboard/config.js` - Configuration file with:
+    - API_URL placeholder for deployment configuration
+    - Auto-refresh interval constant (5 minutes)
+    - Cache and API key storage keys for localStorage
+    - Covers requirement [13.5]
+  - `dashboard/app.js` - Application logic with:
+    - State management for weekly stats, selected project, sessions, sync status
+    - API key setup flow with validation and localStorage storage
+    - Data fetching with caching to localStorage
+    - Offline fallback displaying cached data with indicator
+    - Auto-refresh every 5 minutes
+    - Render functions for all dashboard panels
+    - Project selection and session loading
+    - Tooltips for weekly activity bar segments
+    - XSS protection via HTML escaping
+    - Covers requirements [13.1]-[13.5]
+
 - Worker entry point (`src/index.ts`) with full implementation (Phase 7):
   - CORS middleware with configurable origin (defaults to `*` for development)
   - Allows `Content-Type` and `x-api-key` headers

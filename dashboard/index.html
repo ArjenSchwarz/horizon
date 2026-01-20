@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Horizon - Personal time tracking for AI coding sessions">
+  <title>Horizon</title>
+
+  <!-- Fonts: IBM Plex Mono and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">H</span>
+        <span class="logo-text">Horizon</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="machine-name" id="machine-name">--</span>
+      <div class="sync-status" id="sync-status">
+        <span class="sync-dot"></span>
+        <span class="sync-text">--</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- API Key Setup (shown when no API key) -->
+    <section class="api-key-setup" id="api-key-setup" hidden>
+      <div class="setup-card">
+        <h2>Connect to Horizon</h2>
+        <p>Enter your API key to start viewing your coding sessions.</p>
+        <form id="api-key-form">
+          <input
+            type="password"
+            id="api-key-input"
+            placeholder="Enter API key"
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="btn-primary">Connect</button>
+        </form>
+        <p class="setup-error" id="setup-error" hidden></p>
+      </div>
+    </section>
+
+    <!-- Dashboard Content (shown when API key is set) -->
+    <div class="dashboard" id="dashboard" hidden>
+      <!-- Stats Cards Row -->
+      <section class="stats-cards" aria-label="Statistics overview">
+        <!-- This Week -->
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="stat-this-week">--</div>
+          <div class="stat-comparison" id="stat-comparison">--</div>
+        </div>
+
+        <!-- Today -->
+        <div class="stat-card">
+          <div class="stat-label">Today</div>
+          <div class="stat-value" id="stat-today-hours">--</div>
+          <div class="stat-secondary" id="stat-today-sessions">-- sessions</div>
+        </div>
+
+        <!-- Top Agent -->
+        <div class="stat-card">
+          <div class="stat-label">Top Agent</div>
+          <div class="stat-value" id="stat-top-agent">--</div>
+          <div class="stat-secondary" id="stat-top-agent-hours">-- hrs</div>
+        </div>
+
+        <!-- Streak -->
+        <div class="stat-card">
+          <div class="stat-label">Streak</div>
+          <div class="stat-value" id="stat-streak">--</div>
+          <div class="stat-secondary">consecutive days</div>
+        </div>
+      </section>
+
+      <!-- Weekly Activity Panel -->
+      <section class="panel weekly-activity" aria-label="Weekly activity">
+        <h2 class="panel-title">Weekly Activity</h2>
+        <div class="weekly-chart" id="weekly-chart">
+          <!-- Rendered by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Projects and Session Detail Row -->
+      <section class="projects-row">
+        <!-- Projects Panel -->
+        <div class="panel projects-panel">
+          <h2 class="panel-title">Projects</h2>
+          <div class="projects-list" id="projects-list">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Session Detail Panel -->
+        <div class="panel session-detail" id="session-detail-panel" hidden>
+          <h2 class="panel-title" id="session-detail-title">Sessions today</h2>
+          <div class="sessions-list" id="sessions-list">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Agents Row -->
+      <section class="agents-row">
+        <!-- Agents This Week Panel -->
+        <div class="panel agents-panel">
+          <h2 class="panel-title">Agents This Week</h2>
+          <div class="agents-chart" id="agents-chart">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Agent x Project Panel -->
+        <div class="panel agent-project-panel">
+          <h2 class="panel-title">Agent x Project</h2>
+          <div class="agent-project-list" id="agent-project-list">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offline-indicator" hidden>
+      <span class="offline-icon">!</span>
+      <span>Offline - showing cached data</span>
+    </div>
+  </main>
+
+  <!-- Tooltip (for weekly activity bars) -->
+  <div class="tooltip" id="tooltip" hidden>
+    <div class="tooltip-content"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
