@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Statistics service (`src/services/statistics.ts`) with:
+  - `calculateWeeklyStats` function for weekly totals, daily breakdown, project/agent breakdowns
+  - `calculateDailyBreakdown` function for 7-day activity breakdown by day
+  - `calculateProjectBreakdown` function to aggregate hours and sessions per project
+  - `calculateAgentBreakdown` function to aggregate hours and percentages per agent
+  - `calculateStreak` function to count consecutive days with activity
+  - `calculateProjectStats` function for project statistics with agent breakdown
+  - All calculations use UTC date boundaries
+- Unit tests for statistics service (`src/services/statistics.test.ts`) covering:
+  - Weekly totals calculation (hours, sessions, rounding)
+  - Daily breakdown generation (7 days, session aggregation)
+  - Project aggregation (hours, sessions, sorting by hours)
+  - Agent breakdown (hours, percentages, division by zero handling)
+  - Streak calculation (consecutive days, UTC boundaries, gap handling)
+  - Project statistics with agent breakdown
+
 - Session derivation service (`src/services/sessions.ts`) with:
   - `calculateSessions` function to derive sessions from interactions grouped by session_id
   - `deriveSession` function to calculate session metadata (start, end, span, active time)

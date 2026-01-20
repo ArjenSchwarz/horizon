@@ -52,7 +52,7 @@ references:
 
 ## Phase 4 - Statistics Service (TDD)
 
-- [ ] 7. Write statistics calculation unit tests
+- [x] 7. Write statistics calculation unit tests
   - Create src/services/statistics.test.ts
   - Test weekly totals calculation
   - Test daily breakdown generation
@@ -60,7 +60,7 @@ references:
   - Test streak calculation
   - Requirements: [19.3](requirements.md#19.3), [19.4](requirements.md#19.4)
 
-- [ ] 8. Implement statistics service
+- [x] 8. Implement statistics service
   - Create src/services/statistics.ts
   - Implement calculateWeeklyStats function
   - Implement calculateDailyBreakdown function
