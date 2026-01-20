@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- GitHub Actions validation workflow (`.github/workflows/validate.yml`):
+  - Type check job using `make typecheck`
+  - Test job running all tests with `make test`
+  - ShellCheck job for linting bash scripts in `hooks/` directory
+  - Runs on push to `main`, `develop`, `feature/**` branches
+  - Runs on pull requests to `main` and `develop`
+
 ### Fixed
 
 - XSS vulnerability in dashboard agent rendering (`dashboard/app.js`):
