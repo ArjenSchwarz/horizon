@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Makefile with development commands (Phase 10):
+  - `make dev` - Start development server with hot reload
+  - `make test` - Run all tests
+  - `make test-watch` - Run tests in watch mode
+  - `make typecheck` / `make lint` - Run TypeScript type checking
+  - `make deploy` - Deploy to Cloudflare Workers
+  - `make db-create` - Create D1 database
+  - `make schema-init` - Initialize database schema
+  - `make schema-init-local` - Initialize schema for local development
+  - `make setup` - Install dependencies
+  - `make clean` - Remove generated files
+
 - Hook script and configuration templates (Phase 9):
   - `hooks/horizon-hook` - Bash script for Claude Code integration with:
     - Configuration reading from `~/.config/horizon/config.json`

@@ -157,12 +157,12 @@ references:
 
 ## Phase 10 - Integration
 
-- [ ] 19. Run all tests and verify coverage
+- [x] 19. Run all tests and verify coverage
   - Execute pnpm test
   - Verify session derivation tests pass
   - Verify statistics tests pass
   - Ensure all requirement test coverage
 
-- [ ] 20. Create Makefile with development commands
+- [x] 20. Create Makefile with development commands
   - Add test, dev, deploy targets
   - Add schema initialization target
