@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS interactions (
     agent TEXT NOT NULL,
     session_id TEXT NOT NULL,
     event_type TEXT NOT NULL CHECK (event_type IN ('prompt-start', 'response-end', 'session-end')),
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', 'utc'))
 );
 
 -- Unique constraint for idempotency (requirement 7.6)

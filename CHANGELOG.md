@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- UTC timezone in database schema (`schema.sql`):
+  - Fixed `created_at` column to use UTC timezone with `datetime('now', 'utc')`
+  - Ensures consistency with requirement [3.10] that all date calculations use UTC
+
 - XSS vulnerability in dashboard agent rendering (`dashboard/app.js`):
   - Agent name, initial, and class now properly escaped with `escapeHtml()`
   - Prevents potential script injection if malicious agent names reach the database
