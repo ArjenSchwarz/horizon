@@ -1,7 +1,7 @@
 # Horizon Makefile
 # Development commands for the Horizon time tracking system
 
-.PHONY: help dev test test-watch deploy schema-init db-create setup lint typecheck clean
+.PHONY: help dev test test-watch deploy deploy-dashboard deploy-all schema-init db-create setup lint typecheck clean
 
 # Default target - show help
 help:
@@ -19,8 +19,10 @@ help:
 	@echo "  make schema-init  - Initialize database schema"
 	@echo ""
 	@echo "Deployment:"
-	@echo "  make deploy       - Deploy to Cloudflare Workers"
-	@echo "  make setup        - Initial setup (install dependencies)"
+	@echo "  make deploy            - Deploy Worker to Cloudflare"
+	@echo "  make deploy-dashboard  - Deploy dashboard to Cloudflare Pages"
+	@echo "  make deploy-all        - Deploy both Worker and dashboard"
+	@echo "  make setup             - Initial setup (install dependencies)"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean        - Remove generated files"
@@ -44,9 +46,16 @@ typecheck:
 # Lint check (using TypeScript)
 lint: typecheck
 
-# Deploy to Cloudflare Workers
+# Deploy Worker to Cloudflare
 deploy:
 	npm run deploy
+
+# Deploy dashboard to Cloudflare Pages
+deploy-dashboard:
+	cd dashboard && wrangler pages deploy
+
+# Deploy both Worker and dashboard
+deploy-all: deploy deploy-dashboard
 
 # Create D1 database (run once during initial setup)
 db-create:

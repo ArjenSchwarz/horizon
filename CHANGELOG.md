@@ -7,8 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Devices widget in dashboard (`dashboard/index.html`, `dashboard/app.js`, `dashboard/styles.css`):
+  - New "Devices" panel displaying machine/hostname usage statistics
+  - Positioned next to Projects panel in 2-column grid layout
+  - Bar chart visualization showing hours and percentage per device
+  - Empty state handling when no device data is available
+  - Styling matching Ground Control aesthetic with amber accent color
+- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`, `src/routes/stats.test.ts`, `src/services/statistics.test.ts`):
+  - `MachineSummary` interface with machine name, hours, and percentage
+  - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
+  - `machines` array included in WeeklyStats response, sorted by hours descending
+  - API endpoint test coverage for machines field
+  - Unit test coverage: aggregation, sorting, zero division handling, percentage rounding (4 tests)
+- Dashboard deployment configuration (`dashboard/wrangler.toml`):
+  - Dedicated wrangler.toml for Cloudflare Pages deployment
+  - Eliminates warning about missing `pages_build_output_dir`
+  - Separates Pages config from Worker's wrangler.toml
+- Makefile deployment targets (`Makefile`):
+  - `make deploy-dashboard` - Deploy dashboard to Cloudflare Pages
+  - `make deploy-all` - Deploy both Worker and dashboard in sequence
+
+### Removed
+
+- Debug console logging from devices widget (`dashboard/app.js`)
+
+### Fixed
+
+- CI workflow now creates wrangler.toml from wrangler-sample.toml before running tests and typecheck
+  - Required because wrangler.toml is gitignored
+  - Prevents test failures in GitHub Actions
+
 ### Changed
 
+- Dashboard layout (`dashboard/index.html`):
+  - Projects and Devices panels now share a 2-column row
+  - Session Detail panel moved to full-width below when project is selected
 - Claude Code hook configuration format updated to new matcher-based format:
   - `hooks/settings.json.example` now uses `hooks` array with `type: "command"` objects
   - README.md hook setup section updated with new format (lines 169-192)

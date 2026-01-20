@@ -86,6 +86,7 @@ describe("Statistics Routes", () => {
       expect(body).toHaveProperty("daily_breakdown");
       expect(body).toHaveProperty("projects");
       expect(body).toHaveProperty("agents");
+      expect(body).toHaveProperty("machines");
       expect(body).toHaveProperty("comparison");
     });
 

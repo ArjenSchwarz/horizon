@@ -93,6 +93,18 @@ export interface AgentSummary {
 }
 
 /**
+ * Machine summary for weekly statistics.
+ */
+export interface MachineSummary {
+  /** Machine hostname */
+  name: string;
+  /** Total active hours */
+  hours: number;
+  /** Percentage of total hours (0-100) */
+  percentage: number;
+}
+
+/**
  * Response from GET /api/stats/weekly endpoint.
  */
 export interface WeeklyStats {
@@ -108,6 +120,8 @@ export interface WeeklyStats {
   projects: ProjectSummary[];
   /** Agents sorted by hours descending */
   agents: AgentSummary[];
+  /** Machines sorted by hours descending */
+  machines: MachineSummary[];
   /** Comparison with previous period */
   comparison: {
     /** Hour difference from previous week */

@@ -694,6 +694,64 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+/* Devices */
+.devices-panel {
+  min-height: 200px;
+}
+
+.devices-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.device-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.device-bar-name {
+  width: 120px;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-bar-container {
+  flex: 1;
+  height: 20px;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.device-bar {
+  height: 100%;
+  background-color: var(--accent-amber);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+}
+
+.device-bar-value {
+  width: 60px;
+  text-align: right;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.device-bar-percent {
+  width: 40px;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
 /* Offline Indicator */
 .offline-indicator {
   position: fixed;
