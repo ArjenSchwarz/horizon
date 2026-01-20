@@ -624,6 +624,10 @@ function renderAgentProjectList() {
 function renderDevicesPanel() {
   const machines = state.weeklyStats.machines || [];
 
+  // Debug: log what we received
+  console.log('Devices widget - machines data:', machines);
+  console.log('Devices widget - full weeklyStats:', state.weeklyStats);
+
   if (machines.length === 0) {
     elements.devicesChart.innerHTML = `
       <div class="empty-state">
