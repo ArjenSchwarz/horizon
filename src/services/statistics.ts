@@ -5,6 +5,7 @@ import type {
   DailyBreakdown,
   ProjectSummary,
   AgentSummary,
+  MachineSummary,
   ProjectStats,
 } from "../types";
 import { calculateSessions } from "./sessions";
@@ -41,6 +42,9 @@ export function calculateWeeklyStats(
   // Agent breakdown
   const agents = calculateAgentBreakdown(sessions, totalHours);
 
+  // Machine breakdown
+  const machines = calculateMachineBreakdown(sessions, totalHours);
+
   // Streak calculation
   const streakDays = calculateStreak(interactions);
 
@@ -51,6 +55,7 @@ export function calculateWeeklyStats(
     daily_breakdown: dailyBreakdown,
     projects,
     agents,
+    machines,
     comparison: {
       // v1 returns 0 for vs_last_week (see design doc limitations)
       vs_last_week: 0,
@@ -152,6 +157,33 @@ export function calculateAgentBreakdown(
   }
 
   return Array.from(agentMap.entries())
+    .map(([name, hours]) => ({
+      name,
+      hours: Math.round(hours * 10) / 10,
+      percentage:
+        totalHours > 0 ? Math.round((hours / totalHours) * 100) : 0,
+    }))
+    .sort((a, b) => b.hours - a.hours);
+}
+
+/**
+ * Calculates machine breakdown from sessions.
+ *
+ * Groups sessions by machine hostname, calculates hours and percentage of total.
+ * Returns machines sorted by hours descending.
+ */
+export function calculateMachineBreakdown(
+  sessions: Session[],
+  totalHours: number
+): MachineSummary[] {
+  const machineMap = new Map<string, number>();
+
+  for (const session of sessions) {
+    const existing = machineMap.get(session.machine) || 0;
+    machineMap.set(session.machine, existing + session.active_minutes / 60);
+  }
+
+  return Array.from(machineMap.entries())
     .map(([name, hours]) => ({
       name,
       hours: Math.round(hours * 10) / 10,

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Devices widget in dashboard (`dashboard/index.html`, `dashboard/app.js`, `dashboard/styles.css`):
+  - New "Devices This Week" panel displaying machine usage statistics
+  - Bar chart visualization showing hours and percentage per device
+  - Empty state handling when no device data is available
+  - Styling matching Ground Control aesthetic with amber accent color
+- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`):
+  - `MachineSummary` interface with machine name, hours, and percentage
+  - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
+  - `machines` array included in WeeklyStats response, sorted by hours descending
+
 ### Changed
 
 - Claude Code hook configuration format updated to new matcher-based format:

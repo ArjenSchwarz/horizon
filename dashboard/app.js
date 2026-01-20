@@ -96,6 +96,7 @@ function cacheElements() {
   elements.sessionsList = document.getElementById('sessions-list');
   elements.agentsChart = document.getElementById('agents-chart');
   elements.agentProjectList = document.getElementById('agent-project-list');
+  elements.devicesChart = document.getElementById('devices-chart');
 }
 
 /**
@@ -279,6 +280,7 @@ function render() {
   renderProjectsList();
   renderSessionDetail();
   renderAgentsPanels();
+  renderDevicesPanel();
   updateOfflineIndicator();
 }
 
@@ -614,6 +616,42 @@ function renderAgentProjectList() {
   }).join('');
 
   elements.agentProjectList.innerHTML = html;
+}
+
+/**
+ * Render devices panel
+ */
+function renderDevicesPanel() {
+  const machines = state.weeklyStats.machines || [];
+
+  if (machines.length === 0) {
+    elements.devicesChart.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">-</div>
+        <div>No device data</div>
+      </div>
+    `;
+    return;
+  }
+
+  const maxHours = Math.max(...machines.map((m) => m.hours), 1);
+
+  const html = machines.map((machine) => {
+    const widthPercent = (machine.hours / maxHours) * 100;
+
+    return `
+      <div class="device-bar-row">
+        <div class="device-bar-name">${escapeHtml(machine.name)}</div>
+        <div class="device-bar-container">
+          <div class="device-bar" style="width: ${widthPercent}%;"></div>
+        </div>
+        <div class="device-bar-value">${machine.hours.toFixed(1)}h</div>
+        <div class="device-bar-percent">${machine.percentage}%</div>
+      </div>
+    `;
+  }).join('');
+
+  elements.devicesChart.innerHTML = html;
 }
 
 /**
