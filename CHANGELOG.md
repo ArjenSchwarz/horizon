@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- XSS vulnerability in dashboard agent rendering (`dashboard/app.js`):
+  - Agent name, initial, and class now properly escaped with `escapeHtml()`
+  - Prevents potential script injection if malicious agent names reach the database
+
+- Empty project name edge case in hook script (`hooks/horizon-hook`):
+  - Added fallback to `unknown-project` when normalization results in empty string
+  - Logs error for debugging when fallback is used
+
+- Date handling in statistics routes (`src/routes/stats.ts`):
+  - Fixed off-by-one error at UTC day boundaries
+  - Now sets `setUTCHours(0,0,0,0)` before `setUTCDate()` to ensure correct date calculation
+
 ### Added
 
 - Makefile with development commands (Phase 10):

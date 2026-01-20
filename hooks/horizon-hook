@@ -64,6 +64,12 @@ fi
 # Normalize project name: lowercase, hyphens for special chars
 PROJECT=$(echo "$PROJECT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
 
+# Fallback if normalization resulted in empty string
+if [[ -z "$PROJECT" ]]; then
+    PROJECT="unknown-project"
+    log_error "Project name normalized to empty string, using fallback: $PROJECT"
+fi
+
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 MACHINE=$(hostname -s)

@@ -106,10 +106,10 @@ app.get("/stats/weekly", async (c) => {
 app.get("/stats/projects", async (c) => {
   const days = parseInt(c.req.query("days") || "30", 10);
 
-  // Calculate start date
+  // Calculate start date (set UTC time first to avoid off-by-one at day boundaries)
   const startDate = new Date();
-  startDate.setUTCDate(startDate.getUTCDate() - days);
   startDate.setUTCHours(0, 0, 0, 0);
+  startDate.setUTCDate(startDate.getUTCDate() - days);
 
   // Query interactions
   const { results: interactions } = await c.env.DB.prepare(
@@ -156,10 +156,10 @@ app.get("/projects/:name/sessions", async (c) => {
   const projectName = c.req.param("name");
   const days = parseInt(c.req.query("days") || "7", 10);
 
-  // Calculate start date
+  // Calculate start date (set UTC time first to avoid off-by-one at day boundaries)
   const startDate = new Date();
-  startDate.setUTCDate(startDate.getUTCDate() - days);
   startDate.setUTCHours(0, 0, 0, 0);
+  startDate.setUTCDate(startDate.getUTCDate() - days);
 
   // Query interactions for this project
   const { results: interactions } = await c.env.DB.prepare(

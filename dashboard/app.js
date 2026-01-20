@@ -565,7 +565,7 @@ function renderAgentsChart() {
 
     return `
       <div class="agent-bar-row">
-        <div class="agent-bar-name">${config.label}</div>
+        <div class="agent-bar-name">${escapeHtml(config.label)}</div>
         <div class="agent-bar-container">
           <div class="agent-bar ${config.class}" style="width: ${widthPercent}%;"></div>
         </div>
@@ -605,8 +605,8 @@ function renderAgentProjectList() {
 
     return `
       <div class="agent-project-row">
-        <div class="agent-project-icon ${config.class}">${config.initial}</div>
-        <div class="agent-project-name">${config.label}</div>
+        <div class="agent-project-icon ${escapeHtml(config.class)}">${escapeHtml(config.initial)}</div>
+        <div class="agent-project-name">${escapeHtml(config.label)}</div>
         <div class="agent-project-projects">${escapeHtml(projectNames) || '--'}</div>
         <div class="agent-project-hours">${agent.hours.toFixed(1)}h</div>
       </div>
