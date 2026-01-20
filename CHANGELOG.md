@@ -15,11 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bar chart visualization showing hours and percentage per device
   - Empty state handling when no device data is available
   - Styling matching Ground Control aesthetic with amber accent color
-- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`, `src/routes/stats.test.ts`):
+- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`, `src/routes/stats.test.ts`, `src/services/statistics.test.ts`):
   - `MachineSummary` interface with machine name, hours, and percentage
   - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
   - `machines` array included in WeeklyStats response, sorted by hours descending
-  - Test coverage for machines field in API response
+  - API endpoint test coverage for machines field
+  - Unit test coverage: aggregation, sorting, zero division handling, percentage rounding (4 tests)
 - Dashboard deployment configuration (`dashboard/wrangler.toml`):
   - Dedicated wrangler.toml for Cloudflare Pages deployment
   - Eliminates warning about missing `pages_build_output_dir`
