@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
   - `machines` array included in WeeklyStats response, sorted by hours descending
 
+### Fixed
+
+- CI workflow now creates wrangler.toml from wrangler-sample.toml before running tests and typecheck
+  - Required because wrangler.toml is gitignored
+  - Prevents test failures in GitHub Actions
+
 ### Changed
 
 - Claude Code hook configuration format updated to new matcher-based format:
