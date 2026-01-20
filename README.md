@@ -119,10 +119,10 @@ Deploy to Cloudflare Pages:
 
 ```bash
 cd dashboard
-wrangler pages deploy . --project-name=horizon-dashboard
+wrangler pages deploy
 ```
 
-Or host the static files anywhere (GitHub Pages, Netlify, etc.).
+The `wrangler.toml` in the dashboard directory configures the deployment. Or host the static files anywhere (GitHub Pages, Netlify, etc.).
 
 ### 8. Configure CORS (Production)
 
