@@ -23,6 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- README.md with deployment and configuration documentation:
+  - Prerequisites and installation steps
+  - D1 database setup instructions
+  - Worker deployment guide
+  - Dashboard deployment options
+  - Claude Code hook integration setup
+  - API endpoint reference
+  - Development commands
+  - Troubleshooting guide
+  - Security notes
+
 - Makefile with development commands (Phase 10):
   - `make dev` - Start development server with hot reload
   - `make test` - Run all tests
