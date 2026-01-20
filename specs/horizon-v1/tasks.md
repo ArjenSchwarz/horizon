@@ -32,7 +32,7 @@ references:
 
 ## Phase 3 - Session Derivation (TDD)
 
-- [ ] 5. Write session derivation unit tests
+- [x] 5. Write session derivation unit tests
   - Create src/services/sessions.test.ts
   - Test normal prompt-response pairs
   - Test 5-minute default for unpaired prompt-start
@@ -43,7 +43,7 @@ references:
   - Test multiple sessions
   - Requirements: [19.1](requirements.md#19.1), [19.2](requirements.md#19.2)
 
-- [ ] 6. Implement session derivation service
+- [x] 6. Implement session derivation service
   - Create src/services/sessions.ts
   - Implement calculateSessions function
   - Implement deriveSession function

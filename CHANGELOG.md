@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Session derivation service (`src/services/sessions.ts`) with:
+  - `calculateSessions` function to derive sessions from interactions grouped by session_id
+  - `deriveSession` function to calculate session metadata (start, end, span, active time)
+  - `calculateActiveTime` function using FIFO pairing of prompt-start/response-end events
+  - Clock skew protection (negative durations clamped to zero)
+  - 5-minute default duration for unpaired prompt-start events
+  - Sessions sorted by start time descending
+- Unit tests for session derivation (`src/services/sessions.test.ts`) covering:
+  - Normal prompt-response pairs
+  - 5-minute default for unpaired prompt-start
+  - Explicit session-end handling
+  - Out-of-order events processing
+  - Consecutive prompt-starts pairing (FIFO)
+  - Orphaned response-end events ignored
+  - Multiple sessions with different projects/agents
+
 - TypeScript type definitions (`src/types.ts`) covering:
   - `EventType` union type for interaction events
   - `Interaction` interface for recorded AI agent events
