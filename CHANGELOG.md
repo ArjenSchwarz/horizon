@@ -10,14 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Devices widget in dashboard (`dashboard/index.html`, `dashboard/app.js`, `dashboard/styles.css`):
-  - New "Devices This Week" panel displaying machine usage statistics
+  - New "Devices" panel displaying machine/hostname usage statistics
+  - Positioned next to Projects panel in 2-column grid layout
   - Bar chart visualization showing hours and percentage per device
   - Empty state handling when no device data is available
   - Styling matching Ground Control aesthetic with amber accent color
-- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`):
+- Machine breakdown in weekly statistics API (`src/services/statistics.ts`, `src/types.ts`, `src/routes/stats.test.ts`):
   - `MachineSummary` interface with machine name, hours, and percentage
   - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
   - `machines` array included in WeeklyStats response, sorted by hours descending
+  - Test coverage for machines field in API response
 
 ### Fixed
 
@@ -27,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Dashboard layout (`dashboard/index.html`):
+  - Projects and Devices panels now share a 2-column row
+  - Session Detail panel moved to full-width below when project is selected
 - Claude Code hook configuration format updated to new matcher-based format:
   - `hooks/settings.json.example` now uses `hooks` array with `type: "command"` objects
   - README.md hook setup section updated with new format (lines 169-192)
