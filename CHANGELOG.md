@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- API routes for interactions and statistics (Phase 6):
+  - `src/routes/interactions.ts` - POST /interactions endpoint with:
+    - Required field validation (project, timestamp, machine, agent, session_id, event_type)
+    - Event type validation (prompt-start, response-end, session-end)
+    - ISO 8601 timestamp format validation
+    - Idempotent handling with ON CONFLICT DO NOTHING
+    - Returns 201 with {status: "recorded"} on success
+    - Returns 400 with detailed error messages on validation failure
+    - Returns 500 for database errors without exposing internal details
+    - Covers requirements [1.1]-[1.7], [18.1]-[18.3]
+  - `src/routes/stats.ts` - Statistics endpoints with:
+    - GET /stats/weekly with optional week_start parameter (defaults to current week's Monday)
+    - GET /stats/projects with optional days parameter (defaults to 30)
+    - GET /projects/:name/sessions with optional days parameter (defaults to 7)
+    - Returns 404 for non-existent projects
+    - All date calculations use UTC
+    - Covers requirements [3.1]-[3.10], [4.1]-[4.5], [5.1]-[5.7]
+- Unit tests for API routes:
+  - `src/routes/interactions.test.ts` (24 tests) covering all validation and error scenarios
+  - `src/routes/stats.test.ts` (18 tests) covering weekly stats, project stats, and session endpoints
+
 - Authentication middleware (`src/middleware/auth.ts`) with:
   - `apiKeyAuth` function to validate x-api-key header against environment secret
   - Returns 401 Unauthorized when API key is missing or empty

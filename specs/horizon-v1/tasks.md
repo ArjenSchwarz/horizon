@@ -80,7 +80,7 @@ references:
 
 ## Phase 6 - API Routes
 
-- [ ] 10. Implement interactions route
+- [x] 10. Implement interactions route
   - Create src/routes/interactions.ts
   - Validate required fields (project, timestamp, machine, agent, session_id, event_type)
   - Validate event_type is one of prompt-start, response-end, session-end
@@ -90,7 +90,7 @@ references:
   - Return 400 with error message on validation failure
   - Requirements: [1.1](requirements.md#1.1), [1.2](requirements.md#1.2), [1.3](requirements.md#1.3), [1.4](requirements.md#1.4), [1.5](requirements.md#1.5), [1.6](requirements.md#1.6), [1.7](requirements.md#1.7)
 
-- [ ] 11. Implement statistics routes
+- [x] 11. Implement statistics routes
   - Create src/routes/stats.ts
   - Implement GET /api/stats/weekly with optional week_start parameter
   - Implement GET /api/stats/projects with optional days parameter
