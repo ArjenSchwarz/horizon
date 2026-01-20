@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- TypeScript type definitions (`src/types.ts`) covering:
+  - `EventType` union type for interaction events
+  - `Interaction` interface for recorded AI agent events
+  - `Session` interface for derived coding sessions
+  - `WeeklyStats`, `DailyBreakdown`, `ProjectSummary`, `AgentSummary` interfaces for statistics API
+  - `ProjectStats`, `ProjectSessionsResponse`, `ProjectStatsResponse` for project-related endpoints
+  - `InteractionPayload`, `ApiError`, `InteractionRecordedResponse` for API request/response types
 - Project setup with TypeScript and Cloudflare Workers tooling:
   - `package.json` with Hono, Wrangler, Vitest, and TypeScript dependencies
   - `tsconfig.json` configured for Cloudflare Workers
