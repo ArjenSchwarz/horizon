@@ -4,6 +4,7 @@ import {
   calculateDailyBreakdown,
   calculateProjectBreakdown,
   calculateAgentBreakdown,
+  calculateMachineBreakdown,
   calculateStreak,
   calculateProjectStats,
 } from "./statistics";
@@ -366,6 +367,100 @@ describe("calculateAgentBreakdown", () => {
     // 200/300 = 66.67% -> 67
     expect(claude!.percentage).toBe(33);
     expect(cursor!.percentage).toBe(67);
+  });
+});
+
+describe("calculateMachineBreakdown", () => {
+  it("aggregates hours by machine with percentages", () => {
+    const sessions: Session[] = [
+      createSession({
+        machine: "macbook-pro",
+        active_minutes: 60,
+      }),
+      createSession({
+        session_id: "s2",
+        machine: "macbook-pro",
+        active_minutes: 60,
+      }),
+      createSession({
+        session_id: "s3",
+        machine: "desktop",
+        active_minutes: 60,
+      }),
+    ];
+
+    const totalHours = 3; // 180 minutes = 3 hours
+    const machines = calculateMachineBreakdown(sessions, totalHours);
+
+    expect(machines).toHaveLength(2);
+
+    const macbook = machines.find((m) => m.name === "macbook-pro");
+    expect(macbook).toBeDefined();
+    expect(macbook!.hours).toBe(2);
+    expect(macbook!.percentage).toBe(67); // 2/3 = 66.67%, rounded
+
+    const desktop = machines.find((m) => m.name === "desktop");
+    expect(desktop).toBeDefined();
+    expect(desktop!.hours).toBe(1);
+    expect(desktop!.percentage).toBe(33);
+  });
+
+  it("sorts machines by hours descending", () => {
+    const sessions: Session[] = [
+      createSession({
+        machine: "laptop",
+        active_minutes: 30,
+      }),
+      createSession({
+        session_id: "s2",
+        machine: "macbook-pro",
+        active_minutes: 120,
+      }),
+      createSession({
+        session_id: "s3",
+        machine: "desktop",
+        active_minutes: 60,
+      }),
+    ];
+
+    const totalHours = 3.5;
+    const machines = calculateMachineBreakdown(sessions, totalHours);
+
+    expect(machines[0].name).toBe("macbook-pro");
+    expect(machines[1].name).toBe("desktop");
+    expect(machines[2].name).toBe("laptop");
+  });
+
+  it("handles zero total hours without division by zero", () => {
+    const sessions: Session[] = [];
+    const machines = calculateMachineBreakdown(sessions, 0);
+
+    expect(machines).toHaveLength(0);
+  });
+
+  it("rounds percentages to whole numbers", () => {
+    const sessions: Session[] = [
+      createSession({
+        machine: "macbook-pro",
+        active_minutes: 100,
+      }),
+      createSession({
+        session_id: "s2",
+        machine: "desktop",
+        active_minutes: 200,
+      }),
+    ];
+
+    const totalHours = 5; // 300 minutes
+    const machines = calculateMachineBreakdown(sessions, totalHours);
+
+    const macbook = machines.find((m) => m.name === "macbook-pro");
+    const desktop = machines.find((m) => m.name === "desktop");
+
+    // 100/300 = 33.33% -> 33
+    // 200/300 = 66.67% -> 67
+    expect(macbook!.percentage).toBe(33);
+    expect(desktop!.percentage).toBe(67);
   });
 });
 
