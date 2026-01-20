@@ -8,7 +8,7 @@ const CONFIG = {
   // API endpoint URL - update this for your deployment
   // For local development: 'http://localhost:8787'
   // For Cloudflare Workers: 'https://horizon-api.your-subdomain.workers.dev'
-  API_URL: 'http://localhost:8787',
+  API_URL: 'https://horizon-api.ignoreme.workers.dev',
 
   // Auto-refresh interval in milliseconds (default: 5 minutes)
   REFRESH_INTERVAL: 5 * 60 * 1000,

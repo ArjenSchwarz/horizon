@@ -171,20 +171,35 @@ Add to your Claude Code settings (`~/.claude/settings.json`):
   "hooks": {
     "UserPromptSubmit": [
       {
-        "command": "~/.local/bin/horizon-hook prompt-start",
-        "timeout": 5000
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/horizon-hook prompt-start",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "command": "~/.local/bin/horizon-hook response-end",
-        "timeout": 5000
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/horizon-hook response-end",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionEnd": [
       {
-        "command": "~/.local/bin/horizon-hook session-end",
-        "timeout": 5000
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/horizon-hook session-end",
+            "timeout": 5
+          }
+        ]
       }
     ]
   }

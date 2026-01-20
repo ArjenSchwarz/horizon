@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Claude Code hook configuration format updated to new matcher-based format:
+  - `hooks/settings.json.example` now uses `hooks` array with `type: "command"` objects
+  - README.md hook setup section updated with new format (lines 169-192)
+  - Timeout values changed from milliseconds (5000) to seconds (5)
+  - `.claude/settings.json` cleaned up by removing unnecessary empty `matcher` field
+- Dashboard configuration (`dashboard/config.js`):
+  - API_URL updated to production endpoint
+
 ### Added
 
 - GitHub Actions validation workflow (`.github/workflows/validate.yml`):
