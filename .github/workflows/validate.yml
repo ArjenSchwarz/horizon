@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup wrangler config
+        run: cp wrangler-sample.toml wrangler.toml
+
       - name: Run type check
         run: make typecheck
 
@@ -46,6 +49,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup wrangler config
+        run: cp wrangler-sample.toml wrangler.toml
 
       - name: Run tests
         run: make test
