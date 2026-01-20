@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Authentication middleware (`src/middleware/auth.ts`) with:
+  - `apiKeyAuth` function to validate x-api-key header against environment secret
+  - Returns 401 Unauthorized when API key is missing or empty
+  - Returns 403 Forbidden when API key is invalid
+  - Case-sensitive comparison for security
+  - Covers requirements [6.1], [6.2], [6.3], [6.4]
+- Unit tests for authentication middleware (`src/middleware/auth.test.ts`) covering:
+  - Missing and empty API key returns 401
+  - Invalid API key returns 403
+  - Case-sensitive key comparison
+  - Valid API key allows request
+  - Middleware only applies to /api/* routes
+
 - Statistics service (`src/services/statistics.ts`) with:
   - `calculateWeeklyStats` function for weekly totals, daily breakdown, project/agent breakdowns
   - `calculateDailyBreakdown` function for 7-day activity breakdown by day
