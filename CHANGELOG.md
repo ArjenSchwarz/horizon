@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dedicated wrangler.toml for Cloudflare Pages deployment
   - Eliminates warning about missing `pages_build_output_dir`
   - Separates Pages config from Worker's wrangler.toml
+- Makefile deployment targets (`Makefile`):
+  - `make deploy-dashboard` - Deploy dashboard to Cloudflare Pages
+  - `make deploy-all` - Deploy both Worker and dashboard in sequence
+
+### Removed
+
+- Debug console logging from devices widget (`dashboard/app.js`)
 
 ### Fixed
 
