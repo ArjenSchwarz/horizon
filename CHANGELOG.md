@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `calculateMachineBreakdown()` function to aggregate sessions by machine hostname
   - `machines` array included in WeeklyStats response, sorted by hours descending
   - Test coverage for machines field in API response
+- Dashboard deployment configuration (`dashboard/wrangler.toml`):
+  - Dedicated wrangler.toml for Cloudflare Pages deployment
+  - Eliminates warning about missing `pages_build_output_dir`
+  - Separates Pages config from Worker's wrangler.toml
 
 ### Fixed
 
