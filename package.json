@@ -1,0 +1,23 @@
+{
+  "name": "horizon",
+  "version": "1.0.0",
+  "description": "Personal time tracking system for AI coding sessions",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "hono": "^4.11.4"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.4",
+    "@cloudflare/workers-types": "^4.20260117.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.0",
+    "wrangler": "^4.59.2"
+  }
+}

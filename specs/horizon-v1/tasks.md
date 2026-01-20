@@ -8,18 +8,18 @@ references:
 
 ## Phase 1 - Project Setup
 
-- [ ] 1. Initialize project with TypeScript and Wrangler
+- [x] 1. Initialize project with TypeScript and Wrangler
   - Create package.json with TypeScript, Hono, Wrangler, and Vitest dependencies
   - Create tsconfig.json for Cloudflare Workers
   - Create wrangler.toml with D1 binding
   - Requirements: [16.1](requirements.md#16.1), [16.2](requirements.md#16.2), [16.3](requirements.md#16.3)
 
-- [ ] 2. Create database schema
+- [x] 2. Create database schema
   - Create schema.sql with interactions table and all indexes
   - Include unique constraint for idempotency
   - Requirements: [7.1](requirements.md#7.1), [7.2](requirements.md#7.2), [7.3](requirements.md#7.3), [7.4](requirements.md#7.4), [7.5](requirements.md#7.5), [7.6](requirements.md#7.6)
 
-- [ ] 3. Configure Vitest for Workers environment
+- [x] 3. Configure Vitest for Workers environment
   - Create vitest.config.ts with miniflare environment
   - Add test scripts to package.json
   - Requirements: [19.5](requirements.md#19.5)

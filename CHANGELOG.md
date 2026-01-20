@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Project setup with TypeScript and Cloudflare Workers tooling:
+  - `package.json` with Hono, Wrangler, Vitest, and TypeScript dependencies
+  - `tsconfig.json` configured for Cloudflare Workers
+  - `wrangler.toml` with D1 database binding
+  - `vitest.config.ts` with @cloudflare/vitest-pool-workers for Workers environment testing
+- Database schema (`schema.sql`) with:
+  - `interactions` table for storing all event data
+  - Unique index on (session_id, timestamp, event_type) for idempotency
+  - Indexes for project+timestamp, date, session, and agent queries
+- Minimal Worker entry point (`src/index.ts`)
+- Placeholder test file to verify Vitest setup
+
 - Complete specification documents for Horizon v1:
   - Requirements document (`specs/horizon-v1/requirements.md`) with 19 user stories and 87 acceptance criteria in EARS format
   - Technical design document (`specs/horizon-v1/design.md`) covering architecture, components, data models, and testing strategy
