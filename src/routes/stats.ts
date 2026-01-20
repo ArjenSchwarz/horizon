@@ -72,11 +72,14 @@ app.get("/stats/weekly", async (c) => {
     weekStart = getMonday(localNow);
   }
 
-  // Calculate week end (7 days from start)
-  const weekEnd = new Date(weekStart);
-  weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
+  // Adjust query boundaries to account for timezone offset
+  // For UTC+10, Monday 00:00 local = Sunday 14:00 UTC
+  // So we need to query starting from Sunday 14:00 UTC
+  const queryStart = new Date(weekStart.getTime() - timezoneOffset * 60000);
+  const queryEnd = new Date(queryStart);
+  queryEnd.setUTCDate(queryEnd.getUTCDate() + 7);
 
-  // Query interactions for the week
+  // Query interactions for the week (adjusted for timezone)
   const { results: interactions } = await c.env.DB.prepare(
     `
     SELECT * FROM interactions
@@ -84,7 +87,7 @@ app.get("/stats/weekly", async (c) => {
     ORDER BY timestamp ASC
   `
   )
-    .bind(weekStart.toISOString(), weekEnd.toISOString())
+    .bind(queryStart.toISOString(), queryEnd.toISOString())
     .all<Interaction>();
 
   // Calculate statistics with timezone offset
