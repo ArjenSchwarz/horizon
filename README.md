@@ -59,7 +59,15 @@ cd horizon
 make setup  # or: npm install
 ```
 
-### 2. Create D1 Database
+### 2. Configure Wrangler
+
+Copy the sample configuration file:
+
+```bash
+cp wrangler-sample.toml wrangler.toml
+```
+
+### 3. Create D1 Database
 
 ```bash
 wrangler d1 create horizon
@@ -74,13 +82,13 @@ database_name = "horizon"
 database_id = "your-database-id-here"
 ```
 
-### 3. Initialize Schema
+### 4. Initialize Schema
 
 ```bash
 make schema-init  # or: wrangler d1 execute horizon --file=schema.sql
 ```
 
-### 4. Set API Key Secret
+### 5. Set API Key Secret
 
 Generate a secure API key (e.g., `openssl rand -hex 32`) and set it:
 
@@ -88,7 +96,7 @@ Generate a secure API key (e.g., `openssl rand -hex 32`) and set it:
 wrangler secret put API_KEY
 ```
 
-### 5. Deploy Worker
+### 6. Deploy Worker
 
 ```bash
 make deploy  # or: wrangler deploy
@@ -96,7 +104,7 @@ make deploy  # or: wrangler deploy
 
 Note the deployed URL (e.g., `https://horizon-api.your-subdomain.workers.dev`).
 
-### 6. Deploy Dashboard
+### 7. Deploy Dashboard
 
 Update `dashboard/config.js` with your Worker URL:
 
@@ -116,7 +124,7 @@ wrangler pages deploy . --project-name=horizon-dashboard
 
 Or host the static files anywhere (GitHub Pages, Netlify, etc.).
 
-### 7. Configure CORS (Production)
+### 8. Configure CORS (Production)
 
 Update `wrangler.toml` to restrict CORS to your dashboard URL:
 
