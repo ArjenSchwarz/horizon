@@ -21,11 +21,14 @@ import { calculateSessions } from "./sessions";
  * - [3.7] projects - each project's name, hours, session count
  * - [3.8] agents - each agent's name, hours, percentage
  * - [3.9] comparison.vs_last_week - hour difference (returns 0 in v1)
- * - [3.10] Uses UTC for all date calculations
+ * - [3.10] Uses UTC for all date calculations, with optional timezone offset for display grouping
+ *
+ * @param timezoneOffset - Optional timezone offset in minutes from UTC (e.g., -480 for PST, 600 for AEST)
  */
 export function calculateWeeklyStats(
   interactions: Interaction[],
-  weekStart: Date
+  weekStart: Date,
+  timezoneOffset: number = 0
 ): WeeklyStats {
   const sessions = calculateSessions(interactions);
 
@@ -34,7 +37,7 @@ export function calculateWeeklyStats(
   const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
 
   // Daily breakdown for 7 days
-  const dailyBreakdown = calculateDailyBreakdown(sessions, weekStart);
+  const dailyBreakdown = calculateDailyBreakdown(sessions, weekStart, timezoneOffset);
 
   // Project breakdown
   const projects = calculateProjectBreakdown(sessions);
@@ -46,7 +49,7 @@ export function calculateWeeklyStats(
   const machines = calculateMachineBreakdown(sessions, totalHours);
 
   // Streak calculation
-  const streakDays = calculateStreak(interactions);
+  const streakDays = calculateStreak(interactions, timezoneOffset);
 
   return {
     total_hours: totalHours,
@@ -71,11 +74,14 @@ export function calculateWeeklyStats(
  *
  * Requirements covered:
  * - [3.6] daily_breakdown with date, hours, sessions
- * - [3.10] UTC date boundaries
+ * - [3.10] UTC date boundaries with optional timezone offset for local grouping
+ *
+ * @param timezoneOffset - Timezone offset in minutes from UTC (e.g., -480 for PST, 600 for AEST)
  */
 export function calculateDailyBreakdown(
   sessions: Session[],
-  weekStart: Date
+  weekStart: Date,
+  timezoneOffset: number = 0
 ): DailyBreakdown[] {
   const breakdown: DailyBreakdown[] = [];
 
@@ -84,8 +90,16 @@ export function calculateDailyBreakdown(
     date.setUTCDate(date.getUTCDate() + i);
     const dateStr = date.toISOString().split("T")[0];
 
-    // Filter sessions that started on this day (using UTC date)
-    const daySessions = sessions.filter((s) => s.start.startsWith(dateStr));
+    // Filter sessions that started on this day (accounting for timezone offset)
+    const daySessions = sessions.filter((s) => {
+      // Parse the session start timestamp
+      const sessionDate = new Date(s.start);
+      // Apply timezone offset to get local time
+      const localDate = new Date(sessionDate.getTime() + timezoneOffset * 60000);
+      // Extract local date string
+      const localDateStr = localDate.toISOString().split("T")[0];
+      return localDateStr === dateStr;
+    });
 
     // Sum active minutes
     const totalMinutes = daySessions.reduce(
@@ -201,27 +215,32 @@ export function calculateMachineBreakdown(
  *
  * Requirements covered:
  * - [3.5] streak_days - consecutive days with sessions
- * - [3.10] UTC date boundaries
+ * - [3.10] UTC date boundaries with optional timezone offset for local grouping
+ *
+ * @param timezoneOffset - Timezone offset in minutes from UTC (e.g., -480 for PST, 600 for AEST)
  */
-export function calculateStreak(interactions: Interaction[]): number {
+export function calculateStreak(interactions: Interaction[], timezoneOffset: number = 0): number {
   if (interactions.length === 0) {
     return 0;
   }
 
-  // Get unique dates with interactions (UTC)
+  // Get unique dates with interactions (in local timezone)
   const datesWithActivity = new Set<string>();
   for (const interaction of interactions) {
-    datesWithActivity.add(interaction.timestamp.split("T")[0]);
+    const interactionDate = new Date(interaction.timestamp);
+    const localDate = new Date(interactionDate.getTime() + timezoneOffset * 60000);
+    datesWithActivity.add(localDate.toISOString().split("T")[0]);
   }
 
-  // Count consecutive days going backwards from today
+  // Count consecutive days going backwards from today (in local timezone)
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  const localToday = new Date(today.getTime() + timezoneOffset * 60000);
+  localToday.setUTCHours(0, 0, 0, 0);
 
   let streak = 0;
 
   for (let i = 0; i < 365; i++) {
-    const checkDate = new Date(today);
+    const checkDate = new Date(localToday);
     checkDate.setUTCDate(checkDate.getUTCDate() - i);
     const dateStr = checkDate.toISOString().split("T")[0];
 

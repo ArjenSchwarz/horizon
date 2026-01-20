@@ -36,12 +36,13 @@ function getMonday(date: Date): Date {
  *
  * Query parameters:
  * - week_start: string (optional) - ISO date (YYYY-MM-DD) for week start, defaults to current week's Monday
+ * - tz_offset: number (optional) - Timezone offset in minutes from UTC (e.g., -480 for PST, 600 for AEST)
  *
  * Response:
  * - total_hours: number - Total active hours for the week
  * - total_sessions: number - Total number of sessions
  * - streak_days: number - Consecutive days with sessions
- * - daily_breakdown: array - Each day's date, hours, session count
+ * - daily_breakdown: array - Each day's date, hours, session count (grouped by local date if tz_offset provided)
  * - projects: array - Each project's name, hours, session count
  * - agents: array - Each agent's name, hours, percentage
  * - comparison: object - { vs_last_week: number }
@@ -50,10 +51,14 @@ function getMonday(date: Date): Date {
  * - [3.1] GET /api/stats/weekly endpoint
  * - [3.2] Optional week_start parameter
  * - [3.3]-[3.9] Response structure
- * - [3.10] UTC for all calculations
+ * - [3.10] UTC for all calculations, with optional timezone offset for grouping
  */
 app.get("/stats/weekly", async (c) => {
   const weekStartParam = c.req.query("week_start");
+  const tzOffsetParam = c.req.query("tz_offset");
+
+  // Parse timezone offset (default to 0 for UTC)
+  const timezoneOffset = tzOffsetParam ? parseInt(tzOffsetParam, 10) : 0;
 
   // Parse week_start or default to current week's Monday (requirement 3.2, 3.10)
   let weekStart: Date;
@@ -61,7 +66,10 @@ app.get("/stats/weekly", async (c) => {
     // Interpret as YYYY-MM-DDT00:00:00Z (requirement 3.10)
     weekStart = new Date(weekStartParam + "T00:00:00Z");
   } else {
-    weekStart = getMonday(new Date());
+    // Get Monday in the user's local timezone
+    const now = new Date();
+    const localNow = new Date(now.getTime() + timezoneOffset * 60000);
+    weekStart = getMonday(localNow);
   }
 
   // Calculate week end (7 days from start)
@@ -79,8 +87,8 @@ app.get("/stats/weekly", async (c) => {
     .bind(weekStart.toISOString(), weekEnd.toISOString())
     .all<Interaction>();
 
-  // Calculate statistics
-  const stats = calculateWeeklyStats(interactions, weekStart);
+  // Calculate statistics with timezone offset
+  const stats = calculateWeeklyStats(interactions, weekStart, timezoneOffset);
 
   return c.json(stats);
 });

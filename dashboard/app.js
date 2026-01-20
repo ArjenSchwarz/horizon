@@ -125,9 +125,13 @@ async function handleApiKeySubmit(e) {
   button.textContent = 'Connecting...';
 
   try {
-    const response = await fetch(`${CONFIG.API_URL}/api/stats/weekly`, {
-      headers: { 'x-api-key': apiKey },
-    });
+    const tzOffset = getTimezoneOffset();
+    const response = await fetch(
+      `${CONFIG.API_URL}/api/stats/weekly?tz_offset=${tzOffset}`,
+      {
+        headers: { 'x-api-key': apiKey },
+      }
+    );
 
     if (response.status === 401 || response.status === 403) {
       showSetupError('Invalid API key');
@@ -187,9 +191,13 @@ async function loadWeeklyStats() {
   updateSyncStatus('syncing');
 
   try {
-    const response = await fetch(`${CONFIG.API_URL}/api/stats/weekly`, {
-      headers: { 'x-api-key': state.apiKey },
-    });
+    const tzOffset = getTimezoneOffset();
+    const response = await fetch(
+      `${CONFIG.API_URL}/api/stats/weekly?tz_offset=${tzOffset}`,
+      {
+        headers: { 'x-api-key': state.apiKey },
+      }
+    );
 
     if (!response.ok) {
       throw new Error('API error');
@@ -741,9 +749,23 @@ function formatRelativeTime(date) {
 /**
  * Get today's date as ISO string (YYYY-MM-DD)
  */
+/**
+ * Get the user's timezone offset in minutes from UTC
+ * (e.g., -480 for PST, 600 for AEST)
+ */
+function getTimezoneOffset() {
+  return -new Date().getTimezoneOffset();
+}
+
+/**
+ * Get today's date in YYYY-MM-DD format using local calendar date
+ */
 function getTodayISO() {
   const now = new Date();
-  return now.toISOString().split('T')[0];
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
