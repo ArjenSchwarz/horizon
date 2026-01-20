@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "command": "~/.local/bin/horizon-hook prompt-start",
+        "timeout": 5000
+      }
+    ],
+    "Stop": [
+      {
+        "command": "~/.local/bin/horizon-hook response-end",
+        "timeout": 5000
+      }
+    ],
+    "SessionEnd": [
+      {
+        "command": "~/.local/bin/horizon-hook session-end",
+        "timeout": 5000
+      }
+    ]
+  }
+}

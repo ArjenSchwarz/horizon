@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Hook script and configuration templates (Phase 9):
+  - `hooks/horizon-hook` - Bash script for Claude Code integration with:
+    - Configuration reading from `~/.config/horizon/config.json`
+    - Session ID extraction from Claude Code's stdin JSON, with fallback generation
+    - Project name detection from git remote URL (supports SSH and HTTPS formats)
+    - Fallback to directory basename when not in a git repository
+    - Project name normalization (lowercase, hyphens for special characters)
+    - Machine name detection using `hostname -s`
+    - JSON payload construction with jq
+    - API request with 5-second timeout via curl
+    - Error logging to `~/.config/horizon/error.log`
+    - Always exits 0 to prevent blocking Claude Code
+    - Covers requirements [14.1]-[14.10]
+  - `hooks/config.example.json` - Example configuration file with:
+    - `api_url` placeholder for Horizon API endpoint
+    - `api_key` placeholder for authentication
+    - Covers requirement [15.4]
+  - `hooks/settings.json.example` - Claude Code hook configuration template with:
+    - `UserPromptSubmit` hook for `prompt-start` events
+    - `Stop` hook for `response-end` events
+    - `SessionEnd` hook for `session-end` events
+    - 5000ms timeout configured for each hook
+    - Covers requirements [15.1]-[15.3]
+
 - Dashboard implementation (Phase 8):
   - `dashboard/index.html` - Main HTML structure with:
     - Header with logo, machine name, and sync status indicator

@@ -139,7 +139,7 @@ references:
 
 ## Phase 9 - Hook Script
 
-- [ ] 17. Create horizon-hook bash script
+- [x] 17. Create horizon-hook bash script
   - Create hooks/horizon-hook script
   - Read configuration from ~/.config/horizon/config.json
   - Extract session_id from stdin JSON, generate if missing
@@ -150,7 +150,7 @@ references:
   - Always exit 0 regardless of API failures
   - Requirements: [14.1](requirements.md#14.1), [14.2](requirements.md#14.2), [14.3](requirements.md#14.3), [14.4](requirements.md#14.4), [14.5](requirements.md#14.5), [14.6](requirements.md#14.6), [14.7](requirements.md#14.7), [14.8](requirements.md#14.8), [14.9](requirements.md#14.9), [14.10](requirements.md#14.10)
 
-- [ ] 18. Create hook configuration templates
+- [x] 18. Create hook configuration templates
   - Create hooks/config.example.json with placeholder values
   - Create hooks/settings.json.example with Claude Code hook configuration
   - Requirements: [15.1](requirements.md#15.1), [15.2](requirements.md#15.2), [15.3](requirements.md#15.3), [15.4](requirements.md#15.4)
