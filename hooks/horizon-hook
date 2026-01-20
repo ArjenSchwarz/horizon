@@ -1,0 +1,101 @@
+#!/bin/bash
+# horizon-hook - Claude Code hook script for Horizon time tracking
+#
+# This script sends interaction events to the Horizon API for time tracking.
+# It reads configuration from ~/.config/horizon/config.json and extracts
+# session information from Claude Code's stdin JSON input.
+#
+# Usage: horizon-hook <event_type>
+#   event_type: prompt-start, response-end, or session-end
+#
+# Note: We intentionally avoid set -euo pipefail to ensure the script always
+# exits 0 per requirement [14.8], preventing blocking of Claude Code.
+
+CONFIG_FILE="$HOME/.config/horizon/config.json"
+LOG_FILE="$HOME/.config/horizon/error.log"
+EVENT_TYPE="${1:-prompt-start}"
+
+# Ensure config directory exists
+mkdir -p "$(dirname "$LOG_FILE")"
+
+log_error() {
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - $1" >> "$LOG_FILE"
+}
+
+# Read hook input from stdin
+HOOK_INPUT=$(cat)
+
+# Extract session_id from hook input, generate if missing
+SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+if [[ -z "$SESSION_ID" ]]; then
+    SESSION_ID="generated-$(date +%s)-$$"
+fi
+
+# Read config
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    log_error "Config file not found: $CONFIG_FILE"
+    exit 0
+fi
+
+API_URL=$(jq -r '.api_url // empty' "$CONFIG_FILE" 2>/dev/null)
+API_KEY=$(jq -r '.api_key // empty' "$CONFIG_FILE" 2>/dev/null)
+
+if [[ -z "$API_URL" || -z "$API_KEY" ]]; then
+    log_error "Missing api_url or api_key in config"
+    exit 0
+fi
+
+# Determine project name from git remote URL, fallback to directory name
+PROJECT=""
+if git rev-parse --git-dir > /dev/null 2>&1; then
+    REMOTE_URL=$(git remote get-url origin 2>/dev/null || true)
+    if [[ -n "$REMOTE_URL" ]]; then
+        # Extract repo name from git URL (handles both SSH and HTTPS formats)
+        # SSH:   git@github.com:owner/repo.git
+        # HTTPS: https://github.com/owner/repo.git
+        PROJECT=$(echo "$REMOTE_URL" | sed -E 's/.*[\/:]([^\/]+)(\.git)?$/\1/' | sed 's/\.git$//')
+    fi
+fi
+
+if [[ -z "$PROJECT" ]]; then
+    PROJECT=$(basename "$(pwd)")
+fi
+
+# Normalize project name: lowercase, hyphens for special chars
+PROJECT=$(echo "$PROJECT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+
+# Fallback if normalization resulted in empty string
+if [[ -z "$PROJECT" ]]; then
+    PROJECT="unknown-project"
+    log_error "Project name normalized to empty string, using fallback: $PROJECT"
+fi
+
+# Build payload
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+MACHINE=$(hostname -s)
+AGENT="claude-code"
+
+PAYLOAD=$(jq -n \
+    --arg project "$PROJECT" \
+    --arg timestamp "$TIMESTAMP" \
+    --arg machine "$MACHINE" \
+    --arg agent "$AGENT" \
+    --arg session_id "$SESSION_ID" \
+    --arg event_type "$EVENT_TYPE" \
+    '{project: $project, timestamp: $timestamp, machine: $machine, agent: $agent, session_id: $session_id, event_type: $event_type}')
+
+# Send to API (5-second timeout, silent failure)
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+    -X POST "$API_URL/api/interactions" \
+    -H "x-api-key: $API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$PAYLOAD" \
+    --max-time 5 \
+    2>/dev/null) || HTTP_CODE="000"
+
+if [[ "$HTTP_CODE" != "201" && "$HTTP_CODE" != "200" ]]; then
+    log_error "API request failed with HTTP $HTTP_CODE for project=$PROJECT session=$SESSION_ID event=$EVENT_TYPE"
+fi
+
+# Always exit 0 regardless of API failures
+exit 0

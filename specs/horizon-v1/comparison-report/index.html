@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Report: horizon-v1</title>
+    <style>
+ 
+
+ 
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-code: #f4f4f4;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --success-color: #198754;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0d6efd;
+    --link-color: #0d6efd;
+    --link-hover: #0a58ca;
+    --diff-add-bg: #d4edda;
+    --diff-add-text: #155724;
+    --diff-del-bg: #f8d7da;
+    --diff-del-text: #721c24;
+    --diff-hunk-bg: #e7f1ff;
+    --diff-hunk-text: #0c5460;
+}
+
+ 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --bg-card: #2d2d2d;
+        --bg-code: #2d2d2d;
+        --text-primary: #e9ecef;
+        --text-secondary: #adb5bd;
+        --border-color: #495057;
+        --link-color: #6ea8fe;
+        --link-hover: #9ec5fe;
+        --diff-add-bg: #1e3a1e;
+        --diff-add-text: #75b798;
+        --diff-del-bg: #3d1f1f;
+        --diff-del-text: #ea8685;
+        --diff-hunk-bg: #1e3a5f;
+        --diff-hunk-text: #8bb9e0;
+    }
+}
+
+ 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    margin: 0;
+    padding: 0;
+}
+
+ 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+ 
+header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+}
+
+header h1 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.75rem;
+}
+
+header .subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+ 
+footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+ 
+h1, h2, h3, h4 {
+    color: var(--text-primary);
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+ 
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+ 
+code {
+    background-color: var(--bg-code);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: "SF Mono", Monaco, "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em;
+}
+
+pre {
+    background-color: var(--bg-code);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+pre code {
+    padding: 0;
+    background: none;
+}
+
+ 
+.summary {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.summary h2 {
+    margin-top: 0;
+    border: none;
+}
+
+.recommendation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.recommendation-variant {
+    display: flex;
+    flex-direction: column;
+}
+
+.recommendation-variant .label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.recommendation-variant .variant-id {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.confidence {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.confidence-high {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: var(--success-color);
+}
+
+.confidence-medium {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #997404;
+}
+
+.confidence-low {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--error-color);
+}
+
+.executive-summary {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+ 
+.metadata {
+    margin-bottom: 1.5rem;
+}
+
+.metadata dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+}
+
+.metadata dt {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.metadata dd {
+    margin: 0;
+}
+
+ 
+.variants-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.variants-table th,
+.variants-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.variants-table th {
+    background-color: var(--bg-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.variants-table tbody tr:hover {
+    background-color: var(--bg-secondary);
+}
+
+ 
+.status {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-completed {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: var(--success-color);
+}
+
+.status-failed {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--error-color);
+}
+
+.status-pending, .status-running, .status-canceled {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: var(--text-secondary);
+}
+
+.recommended-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.agent-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    background-color: var(--info-color);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+ 
+.observations ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.observations li {
+    margin-bottom: 0.5rem;
+}
+
+ 
+.file-analysis {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.file-analysis h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.file-preference {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--success-color);
+    background-color: rgba(25, 135, 84, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.variant-assessments {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0;
+}
+
+.variant-assessments dt {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.variant-assessments dd {
+    margin: 0;
+}
+
+ 
+.variant-diff {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.variant-diff h3 {
+    background-color: var(--bg-secondary);
+    margin: 0;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.variant-error {
+    padding: 1rem;
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--error-color);
+}
+
+.diff-external {
+    padding: 1rem;
+}
+
+.no-changes {
+    padding: 1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 0;
+}
+
+ 
+details {
+    margin: 0;
+}
+
+details summary {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+}
+
+details summary:hover {
+    background-color: var(--bg-code);
+}
+
+details[open] summary {
+    border-bottom: 1px solid var(--border-color);
+}
+
+ 
+.diff {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 0;
+    border-radius: 0;
+}
+
+ 
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+
+    header, footer {
+        background: none;
+        border: none;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    details {
+        display: block;
+    }
+
+    details summary {
+        display: none;
+    }
+
+    details > *:not(summary) {
+        display: block !important;
+    }
+
+    .variant-diff {
+        break-inside: avoid;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+
+    a[href^="#"]:after {
+        content: "";
+    }
+}
+
+ 
+@media (max-width: 768px) {
+    .metadata dl {
+        grid-template-columns: 1fr;
+    }
+
+    .metadata dt {
+        margin-top: 0.5rem;
+    }
+
+    .metadata dt:first-child {
+        margin-top: 0;
+    }
+
+    .variants-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .recommendation {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .variant-assessments {
+        grid-template-columns: 1fr;
+    }
+
+    .variant-assessments dt {
+        margin-top: 0.5rem;
+    }
+
+    .variant-assessments dt:first-child {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    header {
+        padding: 1rem 0;
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Comparison Report</h1>
+            <p class="subtitle">horizon-v1</p>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="summary">
+            <h2>Recommendation</h2>
+            <div class="recommendation">
+                <div class="recommendation-variant">
+                    <span class="label">Recommended</span>
+                    <span class="variant-id">Variant 1</span>
+                </div>
+                <div class="confidence confidence-high">
+                    high confidence
+                </div>
+            </div>
+            <p class="executive-summary">Variant 1 is the most production-ready implementation with exceptional test coverage (70-80%), well-structured commit history (10 granular commits), and comprehensive documentation. It demonstrates superior software engineering practices with detailed JSDoc comments, requirement traceability, and a complete Makefile with 12 development commands. While Variant 3 is close in quality, Variant 1&#39;s more extensive test suite and changelog make it the better choice for a production system.</p>
+        </section>
+        
+
+        <section class="metadata">
+            <h2>Run Information</h2>
+            <dl>
+                <dt>Base Commit</dt>
+                <dd><code>363a71bd12d32c85829b88313926d4626d4ac38a</code></dd>
+                <dt>Original Branch</dt>
+                <dd>feature/horizon-v1</dd>
+                <dt>Generated</dt>
+                <dd>2026-01-20 17:07:36</dd>
+            </dl>
+        </section>
+
+        <section class="variants-overview">
+            <h2>Variants Overview</h2>
+            <table class="variants-table">
+                <thead>
+                    <tr>
+                        <th>Variant</th>
+                        <th>Branch</th>
+                        <th>Agent</th>
+                        <th>Status</th>
+                        <th>Cost</th>
+                        <th>Duration</th>
+                        <th>Turns</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr class="variant-row status-completed">
+                        <td>
+                            <a href="#variant-1">Variant 1</a>
+                            
+                            <span class="recommended-badge">Recommended</span>
+                            
+                        </td>
+                        <td><code>orbit-impl-1/feature/horizon-v1</code></td>
+                        <td>-</td>
+                        <td><span class="status status-completed">completed</span></td>
+                        <td>$21.7907</td>
+                        <td>41m 26s</td>
+                        <td>473</td>
+                    </tr>
+                    
+                    <tr class="variant-row status-completed">
+                        <td>
+                            <a href="#variant-2">Variant 2</a>
+                            
+                        </td>
+                        <td><code>orbit-impl-2/feature/horizon-v1</code></td>
+                        <td>-</td>
+                        <td><span class="status status-completed">completed</span></td>
+                        <td>-</td>
+                        <td>1h 13m</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr class="variant-row status-completed">
+                        <td>
+                            <a href="#variant-3">Variant 3</a>
+                            
+                        </td>
+                        <td><code>orbit-impl-3/feature/horizon-v1</code></td>
+                        <td>-</td>
+                        <td><span class="status status-completed">completed</span></td>
+                        <td>-</td>
+                        <td>25m 19s</td>
+                        <td>0</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </section>
+
+        
+        
+        <section class="observations">
+            <h2>Key Observations</h2>
+            <ul>
+                
+                <li>Variant 1 has exceptional test coverage (~2,400 lines of tests) with a test-to-code ratio of 2-3.6x across all modules, while Variant 2 is missing route tests, middleware tests, and integration tests entirely (~1,140&#43; lines of tests missing).</li>
+                
+                <li>Variant 1&#39;s commit history shows 10 granular, well-described commits following a clear TDD progression, while Variant 2 has only 1 commit (&#39;Everything codex did&#39;) making it impossible to track implementation decisions.</li>
+                
+                <li>All three variants implement the core functionality correctly - session derivation, statistics calculation, and API endpoints all work. The differences are in test coverage, documentation, and developer experience tooling.</li>
+                
+                <li>Variant 1&#39;s Makefile provides 12 development commands versus Variant 2&#39;s 4, significantly improving developer onboarding and workflow efficiency.</li>
+                
+                <li>The dashboard implementations are functionally equivalent across all variants, with proper XSS protection and offline caching. V1&#39;s app.js is more extensively documented.</li>
+                
+                <li>Variant 3 is close to Variant 1 in quality with similar test coverage (~6,900 lines total) but has a less detailed changelog and slightly smaller Makefile (5 vs 12 targets).</li>
+                
+                <li>Variant 2&#39;s 73-minute duration with 0 turns suggests it was generated without iterative refinement, explaining the missing test coverage for routes and middleware.</li>
+                
+                <li>Package dependencies in Variant 2 use older versions (hono 4.5.0, vitest 1.6.0) compared to Variant 1 (hono 4.11.4, vitest 3.2.0), potentially missing security patches.</li>
+                
+            </ul>
+        </section>
+        
+
+        
+        <section class="file-analyses">
+            <h2>Per-File Analysis</h2>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/services/sessions.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>177 lines with comprehensive JSDoc documentation, explicit requirement mappings, and thorough edge case handling including clock skew protection. Uses well-documented FIFO queue algorithm for event pairing.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>89 lines - functional but minimal documentation. Core logic is correct but lacks comments explaining the pairing algorithm. 46% less code due to missing documentation rather than algorithmic improvement.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>87 lines - similar to V2 in implementation quality. Correct logic with less documentation than V1.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/services/sessions.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>633 lines with 20&#43; test scenarios covering normal cases, edge cases (clock skew, orphaned events, out-of-order processing), and explicit requirement traceability. Helper functions reduce boilerplate.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>115 lines with only 7 test cases covering core scenarios. Missing edge case tests for clock skew, rounding accuracy, span calculation.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>170 lines with moderate coverage. Better than V2 but missing some edge cases present in V1.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/services/statistics.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>276 lines with comprehensive implementation of all statistics functions, proper rounding, and documented limitations (vs_last_week returns 0).</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>170 lines - all required functions present with correct UTC date handling and percentage calculations.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>101 lines - more concise implementation, functionally equivalent to V2.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/services/statistics.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>601 lines with comprehensive test coverage including weekly totals, daily breakdown with UTC handling, project/agent breakdown, streak calculation, and edge cases.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>107 lines with only 4 test cases covering basic scenarios. Missing timezone boundary tests, empty data handling, division-by-zero scenarios.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>249 lines - moderate coverage between V1 and V2.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/routes/interactions.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>131 lines with comprehensive validation (6 required fields, event type enum, ISO 8601 timestamp), informative error messages, and proper logging.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>88 lines - validates required fields and event types but with more generic error messages.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>48 lines - minimal but functional validation. Less detailed error messages.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/routes/interactions.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>262 lines with 10&#43; test scenarios covering field validation, empty string handling, event type validation, idempotency, and database error handling.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>0 lines - COMPLETELY MISSING. Critical gap for a production API.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>263 lines - comparable to V1 with comprehensive validation testing.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/routes/stats.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>200 lines with well-documented endpoints, proper query parameter handling, and clear response structures.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>135 lines - all endpoints implemented with appropriate error handling.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>105 lines - more concise, functionally equivalent.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/routes/stats.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>465 lines with 23&#43; test scenarios covering parameter handling, response validation, sorting, 404 handling, and active sessions.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>0 lines - COMPLETELY MISSING. Critical gap.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>465 lines - comparable to V1 in test coverage.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/middleware/auth.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>41 lines with proper 401/403 status codes, case-sensitive comparison, and JSDoc documentation.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>17 lines - minimal but correct implementation.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>18 lines - similar to V2, functionally correct.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/middleware/auth.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>103 lines with 10&#43; test scenarios covering missing/invalid API keys, case sensitivity, long key support, and route scope isolation.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>0 lines - COMPLETELY MISSING. Security-critical gap.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>104 lines - comparable to V1.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/index.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>95 lines with CORS configuration, error handling middleware, and structured route mounting.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>34 lines - basic structure without detailed error handling.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>42 lines - includes global error handler, between V1 and V2 in completeness.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/index.test.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>313 lines with integration tests covering CORS, API key flow, route mounting, and error handling.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>0 lines - COMPLETELY MISSING.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>314 lines - comparable to V1.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>dashboard/app.js</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>725 lines with state management, DOM element caching, API integration with caching, offline fallback, auto-refresh, and project color assignment. XSS protection via escapeHtml().</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>661 lines - uses createElement() for XSS protection. Slightly more compact but similar functionality.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>396 lines - more concise implementation with same core features.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>dashboard/styles.css</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>837 lines with comprehensive Ground Control theme, CSS custom properties, agent-specific colors, responsive layout, and animations.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>875 lines - slightly larger but equivalent styling.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>768 lines - more concise with same visual aesthetic.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>hooks/horizon-hook</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>95 lines with robust error handling, git URL parsing (SSH/HTTPS), project name normalization, 5-second timeout, and always exits 0. Comprehensive error logging.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>82 lines - similar functionality, slightly less defensive.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>81 lines - comparable to V2.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>Makefile</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>72 lines with 12 targets: dev, test, test-watch, typecheck, lint, deploy, db-create, schema-init, schema-init-local, setup, clean, help. Well-documented with .PHONY declarations.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>21 lines with only 4 targets: test, dev, deploy, schema-init. Missing help, watch mode, typecheck, cleanup, and database creation commands.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>16 lines with 5 targets. Between V1 and V2 in completeness.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>CHANGELOG.md</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>176 lines with detailed phase-by-phase breakdown, explicit requirement mappings (e.g., &#39;[14.1]-[14.10]&#39;), test count documentation, and feature descriptions.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>17 lines - lists features but lacks requirement traceability, phase breakdown, and test documentation.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>59 lines - moderate detail, between V1 and V2.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>schema.sql</code>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>34 lines with interactions table, CHECK constraint on event_type, 5 strategic indexes including unique constraint for idempotency.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>25 lines - equivalent schema with same indexes.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>31 lines - equivalent schema.</dd>
+                    
+                </dl>
+            </div>
+            
+            <div class="file-analysis">
+                <h3>
+                    <code>src/types.ts</code>
+                    
+                    <span class="file-preference">Variant 1 preferred</span>
+                    
+                </h3>
+                <dl class="variant-assessments">
+                    
+                    <dt>Variant 1</dt>
+                    <dd>183 lines with comprehensive JSDoc documentation for all interfaces, explicit requirement references.</dd>
+                    
+                    <dt>Variant 2</dt>
+                    <dd>62 lines - all required types present but minimal documentation.</dd>
+                    
+                    <dt>Variant 3</dt>
+                    <dd>62 lines - similar to V2.</dd>
+                    
+                </dl>
+            </div>
+            
+        </section>
+        
+        
+
+        <section class="variant-diffs">
+            <h2>Implementation Diffs</h2>
+            
+            <article class="variant-diff" id="variant-1">
+                <h3>
+                    Variant 1
+                    
+                    <span class="recommended-badge">Recommended</span>
+                    
+                </h3>
+                
+                <div class="diff-external">
+                    <p>Diff is large (>500 lines). <a href="diffs/variant-1.html">View full diff</a></p>
+                </div>
+                
+            </article>
+            
+            <article class="variant-diff" id="variant-2">
+                <h3>
+                    Variant 2
+                    
+                </h3>
+                
+                <div class="diff-external">
+                    <p>Diff is large (>500 lines). <a href="diffs/variant-2.html">View full diff</a></p>
+                </div>
+                
+            </article>
+            
+            <article class="variant-diff" id="variant-3">
+                <h3>
+                    Variant 3
+                    
+                </h3>
+                
+                <div class="diff-external">
+                    <p>Diff is large (>500 lines). <a href="diffs/variant-3.html">View full diff</a></p>
+                </div>
+                
+            </article>
+            
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Generated by Orbit</p>
+        </div>
+    </footer>
+</body>
+</html>

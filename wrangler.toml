@@ -1,0 +1,14 @@
+name = "horizon-api"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "horizon"
+database_id = ""  # Set after running: wrangler d1 create horizon
+
+[vars]
+CORS_ORIGIN = "*"  # Change to dashboard URL in production
+
+# API_KEY should be set as a secret:
+# wrangler secret put API_KEY
