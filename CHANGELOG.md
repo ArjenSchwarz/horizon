@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Worker entry point (`src/index.ts`) with full implementation (Phase 7):
+  - CORS middleware with configurable origin (defaults to `*` for development)
+  - Allows `Content-Type` and `x-api-key` headers
+  - Supports GET, POST, OPTIONS methods
+  - API key authentication applied to all `/api/*` routes
+  - Route mounting for interactions and stats endpoints
+  - Global error handler returning 500 without internal details
+  - Error logging with timestamp, endpoint, method, and error type
+  - Covers requirements [6.1]-[6.5], [17.1]-[17.3], [18.3]-[18.4]
+- Unit tests for Worker entry point (`src/index.test.ts`) covering:
+  - Root endpoint health check
+  - CORS with configured origin and default `*`
+  - OPTIONS preflight requests
+  - API key authentication (missing, invalid, valid)
+  - Route mounting verification for all endpoints
+  - Global error handling (500 response, error logging)
+
 - API routes for interactions and statistics (Phase 6):
   - `src/routes/interactions.ts` - POST /interactions endpoint with:
     - Required field validation (project, timestamp, machine, agent, session_id, event_type)
