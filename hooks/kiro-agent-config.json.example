@@ -2,13 +2,17 @@
   "name": "default-with-horizon",
   "model": "claude-sonnet-4-5",
   "hooks": {
-    "userPromptSubmit": {
-      "command": "~/.local/bin/horizon-hook-kiro prompt-start",
-      "timeout_ms": 5000
-    },
-    "stop": {
-      "command": "~/.local/bin/horizon-hook-kiro response-end",
-      "timeout_ms": 5000
-    }
+    "userPromptSubmit": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro prompt-start",
+        "timeout_ms": 5000
+      }
+    ],
+    "stop": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro response-end",
+        "timeout_ms": 5000
+      }
+    ]
   }
 }

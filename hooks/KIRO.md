@@ -59,12 +59,8 @@ chmod +x ~/.local/bin/horizon-hook-kiro
 
 ### 3. Configure Kiro Hooks
 
-Kiro supports two methods for configuring hooks:
-
-#### Method A: Agent Configuration (Recommended)
-
 Edit your Kiro agent configuration file. This is typically located at:
-- `~/.config/kiro/agents/default.json` (global)
+- `~/.kiro/agents/default.json` (global)
 - `.kiro/agents/custom.json` (project-specific)
 
 Add or modify the `hooks` section:
@@ -74,14 +70,18 @@ Add or modify the `hooks` section:
   "name": "default-with-horizon",
   "model": "claude-sonnet-4-5",
   "hooks": {
-    "userPromptSubmit": {
-      "command": "~/.local/bin/horizon-hook-kiro prompt-start",
-      "timeout_ms": 5000
-    },
-    "stop": {
-      "command": "~/.local/bin/horizon-hook-kiro response-end",
-      "timeout_ms": 5000
-    }
+    "userPromptSubmit": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro prompt-start",
+        "timeout_ms": 5000
+      }
+    ],
+    "stop": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro response-end",
+        "timeout_ms": 5000
+      }
+    ]
   }
 }
 ```
@@ -90,8 +90,8 @@ You can use the example file as a starting point:
 
 ```bash
 # For global setup
-mkdir -p ~/.config/kiro/agents
-cp hooks/kiro-agent-config.json.example ~/.config/kiro/agents/horizon.json
+mkdir -p ~/.kiro/agents
+cp hooks/kiro-agent-config.json.example ~/.kiro/agents/horizon.json
 
 # For project-specific setup
 mkdir -p .kiro/agents
@@ -103,32 +103,6 @@ Then use the agent with:
 ```bash
 kiro --agent horizon
 ```
-
-#### Method B: Standalone Hooks (Alternative)
-
-Create standalone hook files in the Kiro hooks directory:
-
-```bash
-mkdir -p ~/.config/kiro/hooks
-
-# Create userPromptSubmit hook
-cat > ~/.config/kiro/hooks/userPromptSubmit.json <<EOF
-{
-  "command": "~/.local/bin/horizon-hook-kiro prompt-start",
-  "timeout_ms": 5000
-}
-EOF
-
-# Create stop hook
-cat > ~/.config/kiro/hooks/stop.json <<EOF
-{
-  "command": "~/.local/bin/horizon-hook-kiro response-end",
-  "timeout_ms": 5000
-}
-EOF
-```
-
-These standalone hooks will apply to all Kiro sessions.
 
 ## How It Works
 
@@ -199,14 +173,18 @@ If using the Kiro VS Code extension:
 ```json
 {
   "kiro.hooks": {
-    "userPromptSubmit": {
-      "command": "~/.local/bin/horizon-hook-kiro prompt-start",
-      "timeout_ms": 5000
-    },
-    "stop": {
-      "command": "~/.local/bin/horizon-hook-kiro response-end",
-      "timeout_ms": 5000
-    }
+    "userPromptSubmit": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro prompt-start",
+        "timeout_ms": 5000
+      }
+    ],
+    "stop": [
+      {
+        "command": "~/.local/bin/horizon-hook-kiro response-end",
+        "timeout_ms": 5000
+      }
+    ]
   }
 }
 ```
@@ -222,17 +200,6 @@ For JetBrains IDE plugin:
 The hook script will work the same way for both CLI and IDE usage.
 
 ## Advanced Configuration
-
-### Custom Session IDs
-
-If you want to track continuous coding sessions across multiple Kiro invocations, you can pass a custom session ID via environment variable:
-
-```bash
-export HORIZON_SESSION_ID="my-feature-session"
-kiro --agent horizon
-```
-
-Modify the hook script to use this environment variable if set.
 
 ### Filtering Projects
 
@@ -254,7 +221,7 @@ First, check the hook activity log to see if hooks are being invoked:
 tail ~/.config/horizon/hook.log
 ```
 
-- Verify hooks are configured in your agent config: `cat ~/.config/kiro/agents/horizon.json`
+- Verify hooks are configured in your agent config: `cat ~/.kiro/agents/horizon.json`
 - Check you're using the correct agent: `kiro --agent horizon`
 - Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-kiro`
 
