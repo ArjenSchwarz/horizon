@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="dashboard/horizon-180.png" alt="Horizon" width="120">
+</p>
+
 # Horizon
 
 Personal time tracking system for AI coding sessions. Tracks which projects you work on, which agents (Claude Code, Copilot, Kiro, etc.) you use, and for how long.

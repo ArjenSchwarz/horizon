@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Dashboard header logo now uses smaller `horizon-icon.webp` image (`dashboard/index.html`)
+- README now displays the Horizon logo at the top (`README.md`)
 
 ### Removed
 
