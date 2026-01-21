@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Favicon and PWA icons for dashboard (`dashboard/index.html`, `dashboard/manifest.json`):
+  - `horizon-32.png` as favicon
+  - `horizon-180.png` as Apple touch icon
+  - `horizon-512.png` for PWA manifest
+  - `manifest.json` with app metadata and Ground Control theme colors
+
 ### Changed
 
-- Dashboard header logo now uses `horizon-logo.webp` image instead of text "H" icon (`dashboard/index.html`, `dashboard/styles.css`)
+- Dashboard header logo now uses smaller `horizon-icon.webp` image (`dashboard/index.html`)
+
+### Removed
+
+- `horizon-logo.webp` replaced by smaller `horizon-icon.webp`
 
 ### Added
 
