@@ -192,6 +192,9 @@ async function loadWeeklyStats() {
 
   try {
     const tzOffset = getTimezoneOffset();
+    console.log('[Horizon Debug] Timezone offset:', tzOffset, 'minutes');
+    console.log('[Horizon Debug] Local time:', new Date().toString());
+
     const response = await fetch(
       `${CONFIG.API_URL}/api/stats/weekly?tz_offset=${tzOffset}`,
       {
@@ -204,6 +207,8 @@ async function loadWeeklyStats() {
     }
 
     state.weeklyStats = await response.json();
+    console.log('[Horizon Debug] Daily breakdown:', state.weeklyStats.daily_breakdown);
+
     state.lastSync = new Date();
     state.isOffline = false;
 
@@ -396,16 +401,14 @@ function renderWeeklyActivity() {
  * Build bar segments for a day's activity
  */
 function buildDaySegments(day, maxHours) {
-  // For now, show full bar since we don't have per-day project breakdown
-  // In a real implementation, we'd need additional API data
   if (day.hours === 0) {
     return '';
   }
 
   const widthPercent = (day.hours / maxHours) * 100;
-  const projects = state.weeklyStats.projects || [];
+  const projects = day.projects || [];
 
-  // Distribute the bar proportionally across projects based on overall hours
+  // Use the day's actual project breakdown
   const totalProjectHours = projects.reduce((sum, p) => sum + p.hours, 0) || 1;
 
   return projects.map((project) => {
@@ -419,7 +422,7 @@ function buildDaySegments(day, maxHours) {
         style="width: ${projectPercent}%; background-color: ${color};"
         data-project="${escapeHtml(project.name)}"
         data-hours="${project.hours.toFixed(1)}"
-        data-agent="${escapeHtml(projects[0]?.name || '')}"
+        data-date="${escapeHtml(day.date)}"
       ></div>
     `;
   }).join('');

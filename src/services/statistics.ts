@@ -69,7 +69,7 @@ export function calculateWeeklyStats(
 /**
  * Calculates daily breakdown of sessions for a 7-day period.
  *
- * Each entry contains the date, total hours, and session count.
+ * Each entry contains the date, total hours, session count, and per-project breakdown.
  * Sessions are attributed to the day of their start timestamp.
  *
  * Requirements covered:
@@ -108,10 +108,14 @@ export function calculateDailyBreakdown(
     );
     const hours = Math.round((totalMinutes / 60) * 10) / 10;
 
+    // Calculate per-project breakdown for this day
+    const projects = calculateProjectBreakdown(daySessions);
+
     breakdown.push({
       date: dateStr,
       hours,
       sessions: daySessions.length,
+      projects,
     });
   }
 

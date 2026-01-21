@@ -66,6 +66,8 @@ export interface DailyBreakdown {
   hours: number;
   /** Number of sessions on this day */
   sessions: number;
+  /** Projects worked on this day with their hours */
+  projects: ProjectSummary[];
 }
 
 /**

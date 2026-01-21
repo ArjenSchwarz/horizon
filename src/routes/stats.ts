@@ -79,6 +79,10 @@ app.get("/stats/weekly", async (c) => {
   const queryEnd = new Date(queryStart);
   queryEnd.setUTCDate(queryEnd.getUTCDate() + 7);
 
+  console.log('[Horizon Debug] Timezone offset:', timezoneOffset);
+  console.log('[Horizon Debug] Week start (local):', weekStart.toISOString());
+  console.log('[Horizon Debug] Query range:', queryStart.toISOString(), 'to', queryEnd.toISOString());
+
   // Query interactions for the week (adjusted for timezone)
   const { results: interactions } = await c.env.DB.prepare(
     `
@@ -90,8 +94,12 @@ app.get("/stats/weekly", async (c) => {
     .bind(queryStart.toISOString(), queryEnd.toISOString())
     .all<Interaction>();
 
+  console.log('[Horizon Debug] Found interactions:', interactions.length);
+
   // Calculate statistics with timezone offset
   const stats = calculateWeeklyStats(interactions, weekStart, timezoneOffset);
+
+  console.log('[Horizon Debug] Daily breakdown:', JSON.stringify(stats.daily_breakdown));
 
   return c.json(stats);
 });
