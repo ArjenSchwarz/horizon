@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Dashboard sizing reduced to fit more content above the fold (`dashboard/styles.css`):
+  - Dashboard section gap reduced (xl → lg)
+  - Stat card padding and font size reduced (2rem → 1.75rem)
+  - Panel padding and title margins reduced
+  - Weekly activity row heights reduced (40px → 32px)
+  - Activity bar heights reduced (28px → 24px)
+  - Agent/device bar heights reduced (24px → 20px)
+  - Various row gaps and spacing tightened
+  - Visual polish (gradients, shadows, hover effects, animations) preserved
+
 ### Added
 
 - Favicon and PWA icons for dashboard (`dashboard/index.html`, `dashboard/manifest.json`):

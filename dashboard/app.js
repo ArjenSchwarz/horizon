@@ -83,7 +83,6 @@ function cacheElements() {
   elements.apiKeyInput = document.getElementById('api-key-input');
   elements.setupError = document.getElementById('setup-error');
   elements.dashboard = document.getElementById('dashboard');
-  elements.machineName = document.getElementById('machine-name');
   elements.syncStatus = document.getElementById('sync-status');
   elements.offlineIndicator = document.getElementById('offline-indicator');
   elements.tooltip = document.getElementById('tooltip');
@@ -391,11 +390,6 @@ function buildProjectColorMap() {
  * Render header (requirement 8.1, 8.2)
  */
 function renderHeader() {
-  // Machine name from first session if available
-  if (state.weeklyStats.projects && state.weeklyStats.projects.length > 0) {
-    elements.machineName.textContent = state.weeklyStats.machine_name || '--';
-  }
-
   // Update sync time
   if (state.lastSync && !state.isOffline) {
     const text = elements.syncStatus.querySelector('.sync-text');
