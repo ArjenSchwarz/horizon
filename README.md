@@ -1,6 +1,6 @@
 # Horizon
 
-Personal time tracking system for AI coding sessions. Tracks which projects you work on, which agents (Claude Code, Cursor, Copilot, Aider, etc.) you use, and for how long.
+Personal time tracking system for AI coding sessions. Tracks which projects you work on, which agents (Claude Code, Copilot, Kiro, etc.) you use, and for how long.
 
 Sessions are derived from interaction timestamps - 30 minutes of idle time starts a new session.
 

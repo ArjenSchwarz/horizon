@@ -26,10 +26,8 @@ const PROJECT_COLORS = [
 const AGENT_CONFIG = {
   'claude-code': { class: 'claude', initial: 'C', label: 'Claude' },
   claude: { class: 'claude', initial: 'C', label: 'Claude' },
-  cursor: { class: 'cursor', initial: 'Cu', label: 'Cursor' },
   copilot: { class: 'copilot', initial: 'Co', label: 'Copilot' },
   'copilot-cli': { class: 'copilot', initial: 'Co', label: 'Copilot' },
-  aider: { class: 'aider', initial: 'A', label: 'Aider' },
   kiro: { class: 'kiro', initial: 'K', label: 'Kiro' },
   'kiro-cli': { class: 'kiro', initial: 'K', label: 'Kiro' },
 };

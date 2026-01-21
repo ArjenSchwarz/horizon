@@ -46,10 +46,8 @@
 
   /* Agent colors */
   --agent-claude: #d97706;
-  --agent-cursor: #8b5cf6;
   --agent-copilot: #3b82f6;
-  --agent-aider: #10b981;
-  --agent-kiro: #06b6d4;
+  --agent-kiro: #8b5cf6;
   --agent-default: #6b7280;
 
   /* Project colors (for weekly activity bars) */
@@ -513,23 +511,13 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--agent-claude);
 }
 
-.agent-badge.cursor {
-  background-color: rgba(139, 92, 246, 0.2);
-  color: var(--agent-cursor);
-}
-
 .agent-badge.copilot {
   background-color: rgba(59, 130, 246, 0.2);
   color: var(--agent-copilot);
 }
 
-.agent-badge.aider {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: var(--agent-aider);
-}
-
 .agent-badge.kiro {
-  background-color: rgba(6, 182, 212, 0.2);
+  background-color: rgba(139, 92, 246, 0.2);
   color: var(--agent-kiro);
 }
 
@@ -598,16 +586,8 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--agent-claude);
 }
 
-.agent-bar.cursor {
-  background-color: var(--agent-cursor);
-}
-
 .agent-bar.copilot {
   background-color: var(--agent-copilot);
-}
-
-.agent-bar.aider {
-  background-color: var(--agent-aider);
 }
 
 .agent-bar.kiro {
@@ -666,16 +646,8 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--agent-claude);
 }
 
-.agent-project-icon.cursor {
-  background-color: var(--agent-cursor);
-}
-
 .agent-project-icon.copilot {
   background-color: var(--agent-copilot);
-}
-
-.agent-project-icon.aider {
-  background-color: var(--agent-aider);
 }
 
 .agent-project-icon.kiro {
