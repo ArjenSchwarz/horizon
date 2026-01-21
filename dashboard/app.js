@@ -66,8 +66,12 @@ async function init() {
   await loadWeeklyStats();
   render();
 
-  // Auto-refresh every 5 minutes (requirement 13.4)
-  setInterval(loadWeeklyStats, CONFIG.REFRESH_INTERVAL);
+  // Auto-refresh every 5 minutes, only for current week (requirement 13.4)
+  setInterval(() => {
+    if (isCurrentWeek()) {
+      loadWeeklyStats();
+    }
+  }, CONFIG.REFRESH_INTERVAL);
 }
 
 /**
@@ -832,11 +836,17 @@ function formatWeekRange(monday) {
 
 /**
  * Check if the current state is viewing the current week
+ * Compares by date components to avoid DST offset issues
  * @returns {boolean}
  */
 function isCurrentWeek() {
   const currentMonday = getMonday(new Date());
-  return state.currentWeekStart.getTime() === currentMonday.getTime();
+  const stateMonday = state.currentWeekStart;
+  return (
+    stateMonday.getFullYear() === currentMonday.getFullYear() &&
+    stateMonday.getMonth() === currentMonday.getMonth() &&
+    stateMonday.getDate() === currentMonday.getDate()
+  );
 }
 
 /**
