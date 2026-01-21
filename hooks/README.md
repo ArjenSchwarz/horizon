@@ -14,7 +14,7 @@ Horizon tracks your coding sessions by receiving events from AI coding assistant
 
 | Assistant | CLI Support | IDE Support | Documentation |
 |-----------|-------------|-------------|---------------|
-| Claude Code | ✅ Full | ❌ N/A | [settings.json.example](settings.json.example) |
+| Claude Code | ✅ Full | ❌ N/A | [claude-settings.json.example](claude-settings.json.example) |
 | GitHub Copilot CLI | ✅ Full | ⚠️ Limited | [COPILOT.md](COPILOT.md) |
 | Kiro | ✅ Full | ✅ Full | [KIRO.md](KIRO.md) |
 
@@ -54,8 +54,8 @@ Copy the hook scripts to your local bin directory:
 mkdir -p ~/.local/bin
 
 # For Claude Code
-cp horizon-hook ~/.local/bin/
-chmod +x ~/.local/bin/horizon-hook
+cp horizon-hook-claude ~/.local/bin/
+chmod +x ~/.local/bin/horizon-hook-claude
 
 # For GitHub Copilot CLI
 cp horizon-hook-copilot ~/.local/bin/
@@ -70,7 +70,7 @@ chmod +x ~/.local/bin/horizon-hook-kiro
 
 Follow the specific guide for your coding assistant:
 
-- **Claude Code**: Copy `settings.json.example` to `~/.claude/settings.json` (or merge with existing settings)
+- **Claude Code**: Copy `claude-settings.json.example` to `~/.claude/settings.json` (or merge with existing settings)
 - **GitHub Copilot CLI**: See [COPILOT.md](COPILOT.md) for detailed setup
 - **Kiro**: See [KIRO.md](KIRO.md) for CLI and IDE configuration
 
@@ -104,13 +104,13 @@ Each interaction records:
 ## Files in This Directory
 
 ### Hook Scripts
-- `horizon-hook` - Claude Code hook script
+- `horizon-hook-claude` - Claude Code hook script
 - `horizon-hook-copilot` - GitHub Copilot CLI hook script
 - `horizon-hook-kiro` - Kiro hook script
 
 ### Configuration Examples
 - `config.example.json` - Horizon API configuration template
-- `settings.json.example` - Claude Code hooks configuration
+- `claude-settings.json.example` - Claude Code hooks configuration
 - `copilot-hooks.json.example` - Copilot CLI hooks configuration
 - `kiro-agent-config.json.example` - Kiro agent configuration with hooks
 
