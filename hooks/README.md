@@ -124,11 +124,13 @@ Each interaction records:
 ### Common Issues
 
 **Hooks not firing:**
+- Check hook activity log: `tail ~/.config/horizon/hook.log`
 - Verify the hook script is executable: `ls -l ~/.local/bin/horizon-hook*`
 - Check configuration files are in the right location
 - Review assistant-specific documentation
 
 **API errors:**
+- Check hook activity log: `tail ~/.config/horizon/hook.log`
 - Check error log: `tail ~/.config/horizon/error.log`
 - Verify API URL and key in `~/.config/horizon/config.json`
 - Test API connectivity: `curl -H "x-api-key: YOUR_KEY" YOUR_API_URL/api/projects`
@@ -138,13 +140,28 @@ Each interaction records:
 - Hook scripts use repo name from remote URL
 - Falls back to directory name if not a git repo
 
-### Error Logging
+### Logging
 
-All hook scripts log errors to `~/.config/horizon/error.log`. Check this file if events aren't appearing in your dashboard:
+All hook scripts provide two types of logging:
+
+**Hook Activity Log** (`~/.config/horizon/hook.log`)
+- Records all hook invocations and their outcomes
+- Shows session IDs, project detection, and API responses
+- Useful for verifying hooks are being triggered
+
+```bash
+tail -f ~/.config/horizon/hook.log
+```
+
+**Error Log** (`~/.config/horizon/error.log`)
+- Records only errors and failures
+- API connection issues, config problems, etc.
 
 ```bash
 tail -f ~/.config/horizon/error.log
 ```
+
+Each log entry includes a timestamp and agent identifier (claude, copilot, kiro) for easy filtering.
 
 The hooks are designed to fail silently (always exit 0) to avoid blocking your coding assistant.
 

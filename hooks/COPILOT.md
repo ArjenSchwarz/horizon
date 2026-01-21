@@ -133,7 +133,8 @@ The hook script automatically:
 2. Normalizes project names (lowercase, hyphenated)
 3. Captures machine hostname
 4. Sends events to Horizon API with 5-second timeout
-5. Logs errors to `~/.config/horizon/error.log` without blocking Copilot
+5. Logs all activity to `~/.config/horizon/hook.log` for debugging
+6. Logs errors to `~/.config/horizon/error.log` without blocking Copilot
 
 ## Verification
 
@@ -145,13 +146,17 @@ Run this command to verify the hook works:
 ~/.local/bin/horizon-hook-copilot session-start
 ```
 
-Check the error log for any issues:
+Check the hook activity log to verify it's working:
+
+```bash
+tail -f ~/.config/horizon/hook.log
+```
+
+You should see log entries showing the hook invocation, session ID, project detection, and API response. If there are issues, also check the error log:
 
 ```bash
 tail -f ~/.config/horizon/error.log
 ```
-
-If successful, you should see no errors. If there are issues, the log will show HTTP status codes and error details.
 
 ### Verify in Dashboard
 
@@ -173,13 +178,23 @@ Currently, only Copilot CLI is supported for automatic time tracking.
 
 ### Hooks Not Firing
 
+First, check the hook activity log to see if hooks are being invoked:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
 - Verify the `--hooks` flag is being used or `COPILOT_HOOKS_FILE` is set
 - Check that the hooks.json path is correct and file exists
 - Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-copilot`
 
 ### API Errors
 
-Check the error log:
+Check the hook activity log for API response codes:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
+Or check the error log for detailed error messages:
 ```bash
 tail ~/.config/horizon/error.log
 ```

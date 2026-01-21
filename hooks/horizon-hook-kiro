@@ -13,6 +13,7 @@
 
 CONFIG_FILE="$HOME/.config/horizon/config.json"
 LOG_FILE="$HOME/.config/horizon/error.log"
+DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-prompt-start}"
 
 # Ensure config directory exists
@@ -21,6 +22,12 @@ mkdir -p "$(dirname "$LOG_FILE")"
 log_error() {
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [kiro] $1" >> "$LOG_FILE"
 }
+
+log_debug() {
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [kiro] $1" >> "$DEBUG_LOG_FILE"
+}
+
+log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
 # Kiro provides context through environment variables and stdin
 # Try to read stdin if available (with timeout to avoid blocking)
@@ -38,6 +45,8 @@ fi
 if [[ -z "$SESSION_ID" ]]; then
     SESSION_ID="kiro-$(date +%s)-$$"
 fi
+
+log_debug "Session ID: $SESSION_ID"
 
 # Read config
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -76,6 +85,8 @@ if [[ -z "$PROJECT" ]]; then
     log_error "Project name normalized to empty string, using fallback: $PROJECT"
 fi
 
+log_debug "Project detected: $PROJECT"
+
 # Map Kiro events to Horizon events
 # agent-spawn -> (skip, not a coding event)
 # prompt-start -> prompt-start
@@ -86,6 +97,7 @@ HORIZON_EVENT=""
 case "$EVENT_TYPE" in
     agent-spawn)
         # Skip agent spawn events as they're not direct coding interactions
+        log_debug "Skipping agent-spawn event"
         exit 0
         ;;
     prompt-start|userPromptSubmit)
@@ -102,9 +114,12 @@ case "$EVENT_TYPE" in
         ;;
     *)
         log_error "Unknown event type: $EVENT_TYPE"
+        log_debug "Unknown event type, exiting"
         exit 0
         ;;
 esac
+
+log_debug "Mapped $EVENT_TYPE -> $HORIZON_EVENT"
 
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -131,6 +146,9 @@ HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
 
 if [[ "$HTTP_CODE" != "201" && "$HTTP_CODE" != "200" ]]; then
     log_error "API request failed with HTTP $HTTP_CODE for project=$PROJECT session=$SESSION_ID event=$HORIZON_EVENT"
+    log_debug "API request failed: HTTP $HTTP_CODE"
+else
+    log_debug "API request successful: HTTP $HTTP_CODE"
 fi
 
 # Always exit 0 regardless of API failures

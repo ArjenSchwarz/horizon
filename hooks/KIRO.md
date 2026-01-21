@@ -154,7 +154,8 @@ The hook script automatically:
 2. Normalizes project names (lowercase, hyphenated)
 3. Captures machine hostname
 4. Sends events to Horizon API with 5-second timeout
-5. Logs errors to `~/.config/horizon/error.log` without blocking Kiro
+5. Logs all activity to `~/.config/horizon/hook.log` for debugging
+6. Logs errors to `~/.config/horizon/error.log` without blocking Kiro
 
 ## Verification
 
@@ -166,13 +167,17 @@ Run this command to verify the hook works:
 ~/.local/bin/horizon-hook-kiro prompt-start
 ```
 
-Check the error log for any issues:
+Check the hook activity log to verify it's working:
+
+```bash
+tail -f ~/.config/horizon/hook.log
+```
+
+You should see log entries showing the hook invocation, session ID, project detection, and API response. If there are issues, also check the error log:
 
 ```bash
 tail -f ~/.config/horizon/error.log
 ```
-
-If successful, you should see no errors. If there are issues, the log will show HTTP status codes and error details.
 
 ### Verify in Dashboard
 
@@ -244,13 +249,23 @@ fi
 
 ### Hooks Not Firing
 
+First, check the hook activity log to see if hooks are being invoked:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
 - Verify hooks are configured in your agent config: `cat ~/.config/kiro/agents/horizon.json`
 - Check you're using the correct agent: `kiro --agent horizon`
 - Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-kiro`
 
 ### API Errors
 
-Check the error log:
+Check the hook activity log for API response codes:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
+Or check the error log for detailed error messages:
 ```bash
 tail ~/.config/horizon/error.log
 ```

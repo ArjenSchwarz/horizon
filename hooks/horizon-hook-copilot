@@ -12,6 +12,7 @@
 
 CONFIG_FILE="$HOME/.config/horizon/config.json"
 LOG_FILE="$HOME/.config/horizon/error.log"
+DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-session-start}"
 
 # Ensure config directory exists
@@ -21,9 +22,17 @@ log_error() {
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [copilot] $1" >> "$LOG_FILE"
 }
 
+log_debug() {
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [copilot] $1" >> "$DEBUG_LOG_FILE"
+}
+
+log_debug "Hook invoked: event_type=$EVENT_TYPE"
+
 # For Copilot, we generate a session ID based on timestamp and PID
 # since Copilot doesn't provide a session_id in the same way Claude Code does
 SESSION_ID="copilot-$(date +%s)-$$"
+
+log_debug "Session ID: $SESSION_ID"
 
 # Read config
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -61,6 +70,8 @@ if [[ -z "$PROJECT" ]]; then
     PROJECT="unknown-project"
     log_error "Project name normalized to empty string, using fallback: $PROJECT"
 fi
+
+log_debug "Project detected: $PROJECT"
 
 # Map Copilot events to Horizon events
 # session-start -> prompt-start
@@ -104,6 +115,9 @@ HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
 
 if [[ "$HTTP_CODE" != "201" && "$HTTP_CODE" != "200" ]]; then
     log_error "API request failed with HTTP $HTTP_CODE for project=$PROJECT session=$SESSION_ID event=$HORIZON_EVENT"
+    log_debug "API request failed: HTTP $HTTP_CODE (mapped $EVENT_TYPE -> $HORIZON_EVENT)"
+else
+    log_debug "API request successful: HTTP $HTTP_CODE (mapped $EVENT_TYPE -> $HORIZON_EVENT)"
 fi
 
 # Always exit 0 regardless of API failures
