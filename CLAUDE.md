@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Horizon is a personal time tracking system for AI coding sessions. It tracks which projects you work on, which agents (Claude Code, Cursor, Copilot, Aider, etc.) you use, and for how long. Sessions are derived from interaction timestamps (30 min idle = new session).
+Horizon is a personal time tracking system for AI coding sessions. It tracks which projects you work on, which agents (Claude Code, Copilot, Kiro, etc.) you use, and for how long. Sessions are derived from interaction timestamps (30 min idle = new session).
 
 ## Architecture
 

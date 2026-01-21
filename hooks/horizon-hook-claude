@@ -13,23 +13,43 @@
 
 CONFIG_FILE="$HOME/.config/horizon/config.json"
 LOG_FILE="$HOME/.config/horizon/error.log"
+DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-prompt-start}"
 
-# Ensure config directory exists
+# Ensure config directory exists with secure permissions
 mkdir -p "$(dirname "$LOG_FILE")"
+chmod 700 "$(dirname "$LOG_FILE")" 2>/dev/null
+
+# Ensure log files have secure permissions
+touch "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+chmod 600 "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+
+# Check for required dependencies
+if ! command -v jq &> /dev/null; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [claude] jq is required but not installed" >> "$LOG_FILE" 2>/dev/null
+    exit 0
+fi
 
 log_error() {
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - $1" >> "$LOG_FILE"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [claude] $1" >> "$LOG_FILE"
+}
+
+log_debug() {
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [claude] $1" >> "$DEBUG_LOG_FILE"
 }
 
 # Read hook input from stdin
 HOOK_INPUT=$(cat)
+
+log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
 # Extract session_id from hook input, generate if missing
 SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/dev/null)
 if [[ -z "$SESSION_ID" ]]; then
     SESSION_ID="generated-$(date +%s)-$$"
 fi
+
+log_debug "Session ID: $SESSION_ID"
 
 # Read config
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -70,9 +90,11 @@ if [[ -z "$PROJECT" ]]; then
     log_error "Project name normalized to empty string, using fallback: $PROJECT"
 fi
 
+log_debug "Project detected: $PROJECT"
+
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-MACHINE=$(hostname -s)
+MACHINE=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
 AGENT="claude-code"
 
 PAYLOAD=$(jq -n \
@@ -95,6 +117,9 @@ HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
 
 if [[ "$HTTP_CODE" != "201" && "$HTTP_CODE" != "200" ]]; then
     log_error "API request failed with HTTP $HTTP_CODE for project=$PROJECT session=$SESSION_ID event=$EVENT_TYPE"
+    log_debug "API request failed: HTTP $HTTP_CODE"
+else
+    log_debug "API request successful: HTTP $HTTP_CODE"
 fi
 
 # Always exit 0 regardless of API failures

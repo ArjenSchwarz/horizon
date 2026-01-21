@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "~/.local/bin/horizon-hook-copilot session-start"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": "~/.local/bin/horizon-hook-copilot session-end"
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 # Horizon Makefile
 # Development commands for the Horizon time tracking system
 
-.PHONY: help dev test test-watch deploy deploy-dashboard deploy-all schema-init db-create setup lint typecheck clean
+.PHONY: help dev test test-watch deploy deploy-dashboard deploy-all schema-init db-create setup lint typecheck clean install-hooks
 
 # Default target - show help
 help:
@@ -23,6 +23,9 @@ help:
 	@echo "  make deploy-dashboard  - Deploy dashboard to Cloudflare Pages"
 	@echo "  make deploy-all        - Deploy both Worker and dashboard"
 	@echo "  make setup             - Initial setup (install dependencies)"
+	@echo ""
+	@echo "Hooks:"
+	@echo "  make install-hooks     - Install all hook scripts to ~/.local/bin"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean        - Remove generated files"
@@ -79,3 +82,26 @@ setup:
 clean:
 	rm -rf node_modules
 	rm -rf .wrangler
+
+# Install hook scripts to ~/.local/bin
+install-hooks:
+	@echo "Installing Horizon hook scripts to ~/.local/bin..."
+	@mkdir -p ~/.local/bin
+	@cp hooks/horizon-hook-claude ~/.local/bin/horizon-hook-claude
+	@chmod +x ~/.local/bin/horizon-hook-claude
+	@echo "  ✓ Installed horizon-hook-claude"
+	@cp hooks/horizon-hook-copilot ~/.local/bin/horizon-hook-copilot
+	@chmod +x ~/.local/bin/horizon-hook-copilot
+	@echo "  ✓ Installed horizon-hook-copilot"
+	@cp hooks/horizon-hook-kiro ~/.local/bin/horizon-hook-kiro
+	@chmod +x ~/.local/bin/horizon-hook-kiro
+	@echo "  ✓ Installed horizon-hook-kiro"
+	@echo ""
+	@echo "Hook scripts installed successfully!"
+	@echo ""
+	@echo "Next steps:"
+	@echo "  1. Configure Horizon API: ~/.config/horizon/config.json"
+	@echo "  2. Configure your assistant hooks:"
+	@echo "     - Claude Code: See hooks/claude-settings.json.example"
+	@echo "     - Copilot CLI: See hooks/COPILOT.md"
+	@echo "     - Kiro: See hooks/KIRO.md"

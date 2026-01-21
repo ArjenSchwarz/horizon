@@ -1,0 +1,203 @@
+# GitHub Copilot CLI Integration
+
+This guide covers setting up Horizon time tracking with GitHub Copilot CLI.
+
+## Overview
+
+GitHub Copilot CLI provides hooks that execute at specific lifecycle points during agent execution. Horizon uses these hooks to track your coding sessions and time spent on projects.
+
+## Prerequisites
+
+- GitHub Copilot CLI installed and configured
+- Horizon API endpoint (local, Cloudflare, or AWS deployment)
+- `jq` command-line tool installed
+- `curl` installed
+
+## Limitations
+
+**Per-prompt hook firing**: As of January 2026, there is a known issue ([#991](https://github.com/github/copilot-cli/issues/991)) where `sessionStart` and `sessionEnd` hooks fire per-prompt instead of per-session in interactive mode. This means:
+
+- Each prompt/response cycle will create a separate session in Horizon
+- Session grouping may not work as expected until this is fixed
+- The hooks will still track time accurately, just with more granular sessions
+
+**No global hooks support**: Copilot CLI does not currently support global hooks configuration. Hooks must be configured per-project in each repository's `.github/hooks/` directory. This means you need to add the hooks configuration to every project you want to track.
+
+## Installation
+
+### 1. Configure Horizon API
+
+Create the config file at `~/.config/horizon/config.json`:
+
+```bash
+mkdir -p ~/.config/horizon
+cat > ~/.config/horizon/config.json <<EOF
+{
+  "api_url": "https://your-horizon-api.example.com",
+  "api_key": "your-api-key-here"
+}
+EOF
+chmod 600 ~/.config/horizon/config.json
+```
+
+Replace with your actual API URL and key:
+- Local: `http://localhost:3000`
+- Cloudflare: `https://horizon-api.your-subdomain.workers.dev`
+- AWS: Your API Gateway URL
+
+### 2. Install Hook Script
+
+**Option A: Using Make (Recommended)**
+
+From the repository root, install all hook scripts:
+
+```bash
+make install-hooks
+```
+
+**Option B: Manual Installation**
+
+Copy the hook script to your local bin directory:
+
+```bash
+mkdir -p ~/.local/bin
+cp hooks/horizon-hook-copilot ~/.local/bin/
+chmod +x ~/.local/bin/horizon-hook-copilot
+```
+
+### 3. Configure Copilot Hooks
+
+Create the hooks directory in your project and copy the configuration:
+
+```bash
+mkdir -p .github/hooks
+cp hooks/copilot-hooks.json.example .github/hooks/project-hooks.json
+```
+
+Copilot CLI automatically loads hooks from `.github/hooks/project-hooks.json`.
+
+The hooks file should contain:
+
+```json
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "~/.local/bin/horizon-hook-copilot session-start"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": "~/.local/bin/horizon-hook-copilot session-end"
+      }
+    ]
+  }
+}
+```
+
+## How It Works
+
+### Event Mapping
+
+Copilot CLI hooks map to Horizon events as follows:
+
+| Copilot Hook | Horizon Event | Description |
+|-------------|---------------|-------------|
+| `sessionStart` | `prompt-start` | User submits a prompt |
+| `sessionEnd` | `response-end` | Agent completes response |
+
+### Session Tracking
+
+Each Copilot session generates a unique session ID in the format: `copilot-{timestamp}-{pid}`
+
+The hook script automatically:
+1. Detects the current project from git remote or directory name
+2. Normalizes project names (lowercase, hyphenated)
+3. Captures machine hostname
+4. Sends events to Horizon API with 5-second timeout
+5. Logs all activity to `~/.config/horizon/hook.log` for debugging
+6. Logs errors to `~/.config/horizon/error.log` without blocking Copilot
+
+## Verification
+
+### Test the Hook
+
+Run this command to verify the hook works:
+
+```bash
+~/.local/bin/horizon-hook-copilot session-start
+```
+
+Check the hook activity log to verify it's working:
+
+```bash
+tail -f ~/.config/horizon/hook.log
+```
+
+You should see log entries showing the hook invocation, session ID, project detection, and API response. If there are issues, also check the error log:
+
+```bash
+tail -f ~/.config/horizon/error.log
+```
+
+### Verify in Dashboard
+
+1. Run a Copilot CLI session with hooks enabled
+2. Check your Horizon dashboard
+3. You should see interactions logged with `agent: copilot-cli`
+
+## IDE Integration
+
+GitHub Copilot in IDEs (VS Code, JetBrains, etc.) does not currently expose lifecycle hooks like the CLI does. Time tracking for IDE usage would require:
+
+1. **Extension/Plugin Development**: Creating a custom extension that hooks into IDE events
+2. **Manual Logging**: Using IDE terminal to run CLI commands at session start/end
+3. **Alternative Tracking**: Using IDE activity tracking plugins that can call external APIs
+
+Currently, only Copilot CLI is supported for automatic time tracking.
+
+## Troubleshooting
+
+### Hooks Not Firing
+
+First, check the hook activity log to see if hooks are being invoked:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
+- Check that hooks file exists: `ls .github/hooks/project-hooks.json`
+- Verify the hooks file has valid JSON syntax
+- Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-copilot`
+
+### API Errors
+
+Check the hook activity log for API response codes:
+```bash
+tail ~/.config/horizon/hook.log
+```
+
+Or check the error log for detailed error messages:
+```bash
+tail ~/.config/horizon/error.log
+```
+
+Common issues:
+- `Config file not found`: Create `~/.config/horizon/config.json`
+- `HTTP 401/403`: Check your API key is correct
+- `HTTP 000`: Network timeout or API unreachable
+
+### Project Name Issues
+
+If the project name isn't detected correctly:
+- Ensure you're in a git repository with a remote: `git remote -v`
+- The script uses the repo name from the remote URL
+- Falls back to directory name if not in a git repo
+
+## References
+
+- [GitHub Copilot CLI Hooks Documentation](https://github.com/github/copilot-cli)
+- [Known Issue #991: sessionStart/End behavior](https://github.com/github/copilot-cli/issues/991)
+- [Copilot CLI Changelog](https://github.com/github/copilot-cli/blob/main/changelog.md)
