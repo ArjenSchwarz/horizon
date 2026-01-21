@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Week navigation in dashboard (`dashboard/app.js`, `dashboard/index.html`, `dashboard/styles.css`):
+  - Navigation controls (prev/next buttons, week label, Today button) in Weekly Activity panel header
+  - Week state management with `currentWeekStart` in state object
+  - Helper functions: `getMonday(date)`, `formatWeekRange(monday)`, `isCurrentWeek()`
+  - API requests include `week_start` parameter for historical weeks
+  - Stat card labels adapt to selected week ("This Week" shows date range, "Today" shows day name)
+  - Selected week persisted in sessionStorage (survives page refresh, per-tab isolation)
+  - Next button disabled when viewing current week
+  - Today button only visible when viewing past weeks
+  - Responsive styling for mobile viewports
 - Week navigation specification (`specs/week-navigation/`):
   - `smolspec.md` - Lightweight spec for adding week navigation to the dashboard
   - `tasks.md` - 7 implementation tasks for the feature

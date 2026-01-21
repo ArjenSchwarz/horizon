@@ -345,6 +345,70 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: var(--space-md);
 }
 
+/* Panel header with navigation */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.panel-header .panel-title {
+  margin-bottom: 0;
+}
+
+/* Week navigation */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.week-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--space-sm);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.week-nav-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--accent-amber);
+}
+
+.week-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.week-today-btn {
+  padding: 0 var(--space-md);
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+
+.week-today-btn:hover:not(:disabled) {
+  background-color: var(--accent-amber-dim);
+}
+
+.week-label {
+  min-width: 100px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
 /* Weekly Activity */
 .weekly-activity {
   padding: var(--space-lg);
@@ -861,6 +925,16 @@ h1, h2, h3, h4, h5, h6 {
 
   .main {
     padding: var(--space-md);
+  }
+
+  .panel-header {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .week-label {
+    min-width: 80px;
   }
 
   .day-row {

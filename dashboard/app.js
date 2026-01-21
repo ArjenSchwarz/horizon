@@ -32,6 +32,9 @@ const AGENT_CONFIG = {
   'kiro-cli': { class: 'kiro', initial: 'K', label: 'Kiro' },
 };
 
+// Session storage key for week navigation
+const WEEK_STORAGE_KEY = 'horizon-current-week';
+
 // Application state
 const state = {
   weeklyStats: null,
@@ -41,6 +44,7 @@ const state = {
   isOffline: false,
   apiKey: localStorage.getItem(CONFIG.API_KEY_STORAGE_KEY),
   projectColorMap: new Map(),
+  currentWeekStart: loadWeekFromStorage() || getMonday(new Date()),
 };
 
 // DOM element cache
@@ -81,13 +85,22 @@ function cacheElements() {
   elements.tooltip = document.getElementById('tooltip');
 
   // Stats
+  elements.statThisWeekLabel = document.querySelector('.stat-card:nth-child(1) .stat-label');
   elements.statThisWeek = document.getElementById('stat-this-week');
   elements.statComparison = document.getElementById('stat-comparison');
+  elements.statTodayLabel = document.querySelector('.stat-card:nth-child(2) .stat-label');
   elements.statTodayHours = document.getElementById('stat-today-hours');
   elements.statTodaySessions = document.getElementById('stat-today-sessions');
   elements.statTopAgent = document.getElementById('stat-top-agent');
   elements.statTopAgentHours = document.getElementById('stat-top-agent-hours');
   elements.statStreak = document.getElementById('stat-streak');
+
+  // Week navigation
+  elements.weekNav = document.getElementById('week-nav');
+  elements.weekLabel = document.getElementById('week-label');
+  elements.weekPrev = document.getElementById('week-prev');
+  elements.weekNext = document.getElementById('week-next');
+  elements.weekToday = document.getElementById('week-today');
 
   // Panels
   elements.weeklyChart = document.getElementById('weekly-chart');
@@ -109,6 +122,44 @@ function setupEventListeners() {
 
   // Tooltip for weekly activity bars
   document.addEventListener('mousemove', handleTooltipMove);
+
+  // Week navigation
+  elements.weekPrev.addEventListener('click', navigateToPreviousWeek);
+  elements.weekNext.addEventListener('click', navigateToNextWeek);
+  elements.weekToday.addEventListener('click', navigateToCurrentWeek);
+}
+
+/**
+ * Navigate to the previous week
+ */
+function navigateToPreviousWeek() {
+  const newMonday = new Date(state.currentWeekStart);
+  newMonday.setDate(newMonday.getDate() - 7);
+  state.currentWeekStart = newMonday;
+  saveWeekToStorage(newMonday);
+  loadWeeklyStats();
+}
+
+/**
+ * Navigate to the next week
+ */
+function navigateToNextWeek() {
+  if (isCurrentWeek()) return;
+
+  const newMonday = new Date(state.currentWeekStart);
+  newMonday.setDate(newMonday.getDate() + 7);
+  state.currentWeekStart = newMonday;
+  saveWeekToStorage(newMonday);
+  loadWeeklyStats();
+}
+
+/**
+ * Navigate to the current week
+ */
+function navigateToCurrentWeek() {
+  state.currentWeekStart = getMonday(new Date());
+  saveWeekToStorage(state.currentWeekStart);
+  loadWeeklyStats();
 }
 
 /**
@@ -196,12 +247,17 @@ async function loadWeeklyStats() {
     console.log('[Horizon Debug] Timezone offset:', tzOffset, 'minutes');
     console.log('[Horizon Debug] Local time:', new Date().toString());
 
-    const response = await fetch(
-      `${CONFIG.API_URL}/api/stats/weekly?tz_offset=${tzOffset}`,
-      {
-        headers: { 'x-api-key': state.apiKey },
-      }
-    );
+    // Build API URL with optional week_start for historical weeks
+    let url = `${CONFIG.API_URL}/api/stats/weekly?tz_offset=${tzOffset}`;
+    if (!isCurrentWeek()) {
+      const weekStart = formatDateISO(state.currentWeekStart);
+      url += `&week_start=${weekStart}`;
+      console.log('[Horizon Debug] Fetching week starting:', weekStart);
+    }
+
+    const response = await fetch(url, {
+      headers: { 'x-api-key': state.apiKey },
+    });
 
     if (!response.ok) {
       throw new Error('API error');
@@ -289,6 +345,7 @@ function render() {
 
   buildProjectColorMap();
   renderHeader();
+  renderWeekNavigation();
   renderStatsCards();
   renderWeeklyActivity();
   renderProjectsList();
@@ -296,6 +353,23 @@ function render() {
   renderAgentsPanels();
   renderDevicesPanel();
   updateOfflineIndicator();
+}
+
+/**
+ * Render week navigation controls
+ */
+function renderWeekNavigation() {
+  // Update week label
+  elements.weekLabel.textContent = formatWeekRange(state.currentWeekStart);
+
+  // Update button states
+  const onCurrentWeek = isCurrentWeek();
+
+  // Disable next button when on current week
+  elements.weekNext.disabled = onCurrentWeek;
+
+  // Show/hide Today button based on whether viewing current week
+  elements.weekToday.hidden = onCurrentWeek;
 }
 
 /**
@@ -330,8 +404,19 @@ function renderHeader() {
  */
 function renderStatsCards() {
   const stats = state.weeklyStats;
+  const onCurrentWeek = isCurrentWeek();
 
-  // This Week
+  // Update labels based on whether viewing current week
+  if (onCurrentWeek) {
+    elements.statThisWeekLabel.textContent = 'This Week';
+    elements.statTodayLabel.textContent = 'Today';
+  } else {
+    elements.statThisWeekLabel.textContent = formatWeekRange(state.currentWeekStart);
+    // For historical weeks, show the first day's name (Monday)
+    elements.statTodayLabel.textContent = state.currentWeekStart.toLocaleDateString('en-US', { weekday: 'long' });
+  }
+
+  // This Week value
   elements.statThisWeek.textContent = formatHours(stats.total_hours);
 
   // Comparison to last week (requirement 8.4)
@@ -344,11 +429,18 @@ function renderStatsCards() {
     elements.statComparison.textContent = '--';
   }
 
-  // Today
-  const today = getTodayISO();
-  const todayData = stats.daily_breakdown?.find((d) => d.date === today);
-  elements.statTodayHours.textContent = formatHours(todayData?.hours || 0);
-  elements.statTodaySessions.textContent = `${todayData?.sessions || 0} sessions`;
+  // Today / First day of week
+  let dayData;
+  if (onCurrentWeek) {
+    const today = getTodayISO();
+    dayData = stats.daily_breakdown?.find((d) => d.date === today);
+  } else {
+    // For historical weeks, show the first day (Monday)
+    const firstDayISO = formatDateISO(state.currentWeekStart);
+    dayData = stats.daily_breakdown?.find((d) => d.date === firstDayISO);
+  }
+  elements.statTodayHours.textContent = formatHours(dayData?.hours || 0);
+  elements.statTodaySessions.textContent = `${dayData?.sessions || 0} sessions`;
 
   // Top Agent
   const topAgent = stats.agents?.[0];
@@ -701,6 +793,94 @@ function handleTooltipMove(e) {
 // ============================================================================
 // Utility Functions
 // ============================================================================
+
+/**
+ * Get the Monday of the week containing the given date (ISO 8601 week)
+ * @param {Date} date
+ * @returns {Date} Monday at midnight in local time
+ */
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  // day 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  // For ISO week, Monday = 0, so adjust: Sunday becomes -6, others subtract (day - 1)
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Format a week range for display (e.g., "Jan 13 - 19" or "Jan 27 - Feb 2")
+ * @param {Date} monday - The Monday starting the week
+ * @returns {string}
+ */
+function formatWeekRange(monday) {
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const startMonth = monday.toLocaleDateString('en-US', { month: 'short' });
+  const endMonth = sunday.toLocaleDateString('en-US', { month: 'short' });
+  const startDay = monday.getDate();
+  const endDay = sunday.getDate();
+
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay} - ${endDay}`;
+  }
+  return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+}
+
+/**
+ * Check if the current state is viewing the current week
+ * @returns {boolean}
+ */
+function isCurrentWeek() {
+  const currentMonday = getMonday(new Date());
+  return state.currentWeekStart.getTime() === currentMonday.getTime();
+}
+
+/**
+ * Load week from sessionStorage
+ * @returns {Date|null}
+ */
+function loadWeekFromStorage() {
+  try {
+    const stored = sessionStorage.getItem(WEEK_STORAGE_KEY);
+    if (stored) {
+      const date = new Date(stored);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+  } catch (e) {
+    // Ignore storage errors
+  }
+  return null;
+}
+
+/**
+ * Save week to sessionStorage
+ * @param {Date} monday
+ */
+function saveWeekToStorage(monday) {
+  try {
+    sessionStorage.setItem(WEEK_STORAGE_KEY, monday.toISOString());
+  } catch (e) {
+    // Ignore storage errors
+  }
+}
+
+/**
+ * Format date as YYYY-MM-DD
+ * @param {Date} date
+ * @returns {string}
+ */
+function formatDateISO(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 /**
  * Get agent configuration
