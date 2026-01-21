@@ -13,13 +13,15 @@ GitHub Copilot CLI provides hooks that execute at specific lifecycle points duri
 - `jq` command-line tool installed
 - `curl` installed
 
-## Hook Limitations
+## Limitations
 
-**Important**: As of January 2026, there is a known issue ([#991](https://github.com/github/copilot-cli/issues/991)) where `sessionStart` and `sessionEnd` hooks fire per-prompt instead of per-session in interactive mode. This means:
+**Per-prompt hook firing**: As of January 2026, there is a known issue ([#991](https://github.com/github/copilot-cli/issues/991)) where `sessionStart` and `sessionEnd` hooks fire per-prompt instead of per-session in interactive mode. This means:
 
 - Each prompt/response cycle will create a separate session in Horizon
 - Session grouping may not work as expected until this is fixed
 - The hooks will still track time accurately, just with more granular sessions
+
+**No global hooks support**: Copilot CLI does not currently support global hooks configuration. Hooks must be configured per-project in each repository's `.github/hooks/` directory. This means you need to add the hooks configuration to every project you want to track.
 
 ## Installation
 
@@ -65,25 +67,14 @@ chmod +x ~/.local/bin/horizon-hook-copilot
 
 ### 3. Configure Copilot Hooks
 
-**Global Setup (Recommended)**
-
-Create the global hooks directory and copy the configuration:
-
-```bash
-mkdir -p ~/.github/hooks
-cp hooks/copilot-hooks.json.example ~/.github/hooks/project-hooks.json
-```
-
-Copilot CLI automatically loads hooks from `~/.github/hooks/project-hooks.json`, so no additional flags are needed.
-
-**Per-Project Setup**
-
-For project-specific hooks, create the hooks file in your repository:
+Create the hooks directory in your project and copy the configuration:
 
 ```bash
 mkdir -p .github/hooks
 cp hooks/copilot-hooks.json.example .github/hooks/project-hooks.json
 ```
+
+Copilot CLI automatically loads hooks from `.github/hooks/project-hooks.json`.
 
 The hooks file should contain:
 
@@ -177,7 +168,7 @@ First, check the hook activity log to see if hooks are being invoked:
 tail ~/.config/horizon/hook.log
 ```
 
-- Check that hooks file exists: `ls ~/.github/hooks/project-hooks.json` or `.github/hooks/project-hooks.json`
+- Check that hooks file exists: `ls .github/hooks/project-hooks.json`
 - Verify the hooks file has valid JSON syntax
 - Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-copilot`
 
