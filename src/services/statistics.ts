@@ -6,6 +6,7 @@ import type {
   ProjectSummary,
   AgentSummary,
   MachineSummary,
+  AgentProjectSummary,
   ProjectStats,
 } from "../types";
 import { calculateSessions } from "./sessions";
@@ -48,6 +49,9 @@ export function calculateWeeklyStats(
   // Machine breakdown
   const machines = calculateMachineBreakdown(sessions, totalHours);
 
+  // Agent-project breakdown
+  const agentProjects = calculateAgentProjectBreakdown(sessions);
+
   // Streak calculation
   const streakDays = calculateStreak(interactions, timezoneOffset);
 
@@ -59,6 +63,7 @@ export function calculateWeeklyStats(
     projects,
     agents,
     machines,
+    agent_projects: agentProjects,
     comparison: {
       // v1 returns 0 for vs_last_week (see design doc limitations)
       vs_last_week: 0,
@@ -207,6 +212,37 @@ export function calculateMachineBreakdown(
       hours: Math.round(hours * 10) / 10,
       percentage:
         totalHours > 0 ? Math.round((hours / totalHours) * 100) : 0,
+    }))
+    .sort((a, b) => b.hours - a.hours);
+}
+
+/**
+ * Calculates agent-project breakdown from sessions.
+ *
+ * Groups sessions by agent, collecting the projects each agent worked on
+ * and the total hours for that agent.
+ * Returns agents sorted by hours descending.
+ */
+export function calculateAgentProjectBreakdown(
+  sessions: Session[]
+): AgentProjectSummary[] {
+  const agentMap = new Map<string, { projects: Set<string>; minutes: number }>();
+
+  for (const session of sessions) {
+    const existing = agentMap.get(session.agent) || {
+      projects: new Set<string>(),
+      minutes: 0,
+    };
+    existing.projects.add(session.project);
+    existing.minutes += session.active_minutes;
+    agentMap.set(session.agent, existing);
+  }
+
+  return Array.from(agentMap.entries())
+    .map(([agent, data]) => ({
+      agent,
+      projects: Array.from(data.projects).sort(),
+      hours: Math.round((data.minutes / 60) * 10) / 10,
     }))
     .sort((a, b) => b.hours - a.hours);
 }

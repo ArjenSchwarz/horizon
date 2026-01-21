@@ -107,6 +107,18 @@ export interface MachineSummary {
 }
 
 /**
+ * Agent-project summary showing which projects each agent worked on.
+ */
+export interface AgentProjectSummary {
+  /** Agent name (e.g., "claude-code") */
+  agent: string;
+  /** Projects this agent worked on */
+  projects: string[];
+  /** Total active hours for this agent */
+  hours: number;
+}
+
+/**
  * Response from GET /api/stats/weekly endpoint.
  */
 export interface WeeklyStats {
@@ -124,6 +136,8 @@ export interface WeeklyStats {
   agents: AgentSummary[];
   /** Machines sorted by hours descending */
   machines: MachineSummary[];
+  /** Agent-project mapping showing which projects each agent worked on */
+  agent_projects: AgentProjectSummary[];
   /** Comparison with previous period */
   comparison: {
     /** Hour difference from previous week */
