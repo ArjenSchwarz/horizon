@@ -49,6 +49,7 @@
   --agent-cursor: #8b5cf6;
   --agent-copilot: #3b82f6;
   --agent-aider: #10b981;
+  --agent-kiro: #06b6d4;
   --agent-default: #6b7280;
 
   /* Project colors (for weekly activity bars) */
@@ -527,6 +528,11 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--agent-aider);
 }
 
+.agent-badge.kiro {
+  background-color: rgba(6, 182, 212, 0.2);
+  color: var(--agent-kiro);
+}
+
 .agent-badge.default {
   background-color: rgba(107, 114, 128, 0.2);
   color: var(--agent-default);
@@ -604,6 +610,10 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--agent-aider);
 }
 
+.agent-bar.kiro {
+  background-color: var(--agent-kiro);
+}
+
 .agent-bar.default {
   background-color: var(--agent-default);
 }
@@ -666,6 +676,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .agent-project-icon.aider {
   background-color: var(--agent-aider);
+}
+
+.agent-project-icon.kiro {
+  background-color: var(--agent-kiro);
 }
 
 .agent-project-icon.default {
