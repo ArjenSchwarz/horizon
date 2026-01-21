@@ -30,10 +30,13 @@ log_debug() {
 log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
 # Kiro provides context through environment variables and stdin
-# Try to read stdin if available (with timeout to avoid blocking)
+# Read stdin if available without consuming data prematurely
 HOOK_INPUT=""
-if read -t 0.1; then
-    HOOK_INPUT=$(cat)
+if timeout 0.2 cat <&0 2>/dev/null | read -r -d '' HOOK_INPUT; then
+    : # stdin was read successfully
+else
+    # No stdin or timeout, that's okay
+    HOOK_INPUT=""
 fi
 
 # Extract session_id from stdin JSON if available, otherwise generate one
@@ -43,7 +46,7 @@ if [[ -n "$HOOK_INPUT" ]]; then
 fi
 
 if [[ -z "$SESSION_ID" ]]; then
-    SESSION_ID="kiro-$(date +%s)-$$"
+    SESSION_ID="kiro-$(date +%s)-$$-$RANDOM"
 fi
 
 log_debug "Session ID: $SESSION_ID"

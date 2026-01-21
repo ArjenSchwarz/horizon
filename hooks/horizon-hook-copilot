@@ -28,11 +28,32 @@ log_debug() {
 
 log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
-# For Copilot, we generate a session ID based on timestamp and PID
-# since Copilot doesn't provide a session_id in the same way Claude Code does
-SESSION_ID="copilot-$(date +%s)-$$"
+# For Copilot, we need to persist session ID across hook invocations
+# (session-start and session-end run as separate processes)
+# Use a temp file to share session ID between start and end events
+SESSION_FILE="$HOME/.config/horizon/.copilot-session-$$"
 
-log_debug "Session ID: $SESSION_ID"
+if [[ "$EVENT_TYPE" == "session-start" ]]; then
+    # Generate new session ID and persist it
+    SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+    echo "$SESSION_ID" > "$SESSION_FILE"
+    log_debug "Created new session ID: $SESSION_ID"
+elif [[ "$EVENT_TYPE" == "session-end" ]]; then
+    # Reuse session ID from session-start
+    if [[ -f "$SESSION_FILE" ]]; then
+        SESSION_ID=$(cat "$SESSION_FILE")
+        rm -f "$SESSION_FILE"  # Clean up session file
+        log_debug "Reused session ID: $SESSION_ID"
+    else
+        # Fallback if session file not found
+        SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+        log_debug "Session file not found, generated fallback ID: $SESSION_ID"
+    fi
+else
+    # Unknown event type fallback
+    SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+    log_debug "Unknown event type, generated ID: $SESSION_ID"
+fi
 
 # Read config
 if [[ ! -f "$CONFIG_FILE" ]]; then
