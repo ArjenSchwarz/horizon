@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Week navigation specification (`specs/week-navigation/`):
+  - `smolspec.md` - Lightweight spec for adding week navigation to the dashboard
+  - `tasks.md` - 7 implementation tasks for the feature
+  - Enables viewing stats for different weeks with prev/next buttons and Today button
+  - Updates stat card labels when viewing historical weeks
+  - Persists selected week in sessionStorage
+
 ### Fixed
 
 - Copilot hook session ID persistence (`hooks/horizon-hook-copilot`):
