@@ -15,8 +15,19 @@ LOG_FILE="$HOME/.config/horizon/error.log"
 DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-session-start}"
 
-# Ensure config directory exists
+# Ensure config directory exists with secure permissions
 mkdir -p "$(dirname "$LOG_FILE")"
+chmod 700 "$(dirname "$LOG_FILE")" 2>/dev/null
+
+# Ensure log files have secure permissions
+touch "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+chmod 600 "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+
+# Check for required dependencies
+if ! command -v jq &> /dev/null; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [copilot] jq is required but not installed" >> "$LOG_FILE" 2>/dev/null
+    exit 0
+fi
 
 log_error() {
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [copilot] $1" >> "$LOG_FILE"
@@ -28,16 +39,21 @@ log_debug() {
 
 log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
+# Clean up stale session files older than 24 hours (prevents accumulation from crashed sessions)
+find /tmp -maxdepth 1 -name "horizon-copilot-session-*" -type f -mmin +1440 -delete 2>/dev/null || true
+
 # For Copilot, we need to persist session ID across hook invocations
-# (session-start and session-end run as separate processes)
-# Use a temp file to share session ID between start and end events
-SESSION_FILE="$HOME/.config/horizon/.copilot-session-$$"
+# (session-start and session-end run as separate processes with different PIDs)
+# Use a temp file in /tmp keyed by working directory to share session ID between events
+# The working directory uniquely identifies the Copilot session context
+SESSION_DIR_HASH=$(pwd | shasum | cut -c1-16)
+SESSION_FILE="/tmp/horizon-copilot-session-$SESSION_DIR_HASH"
 
 if [[ "$EVENT_TYPE" == "session-start" ]]; then
     # Generate new session ID and persist it
-    SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+    SESSION_ID="copilot-$(date +%s)-$RANDOM"
     echo "$SESSION_ID" > "$SESSION_FILE"
-    log_debug "Created new session ID: $SESSION_ID"
+    log_debug "Created new session ID: $SESSION_ID (file: $SESSION_FILE)"
 elif [[ "$EVENT_TYPE" == "session-end" ]]; then
     # Reuse session ID from session-start
     if [[ -f "$SESSION_FILE" ]]; then
@@ -46,12 +62,12 @@ elif [[ "$EVENT_TYPE" == "session-end" ]]; then
         log_debug "Reused session ID: $SESSION_ID"
     else
         # Fallback if session file not found
-        SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+        SESSION_ID="copilot-$(date +%s)-$RANDOM"
         log_debug "Session file not found, generated fallback ID: $SESSION_ID"
     fi
 else
     # Unknown event type fallback
-    SESSION_ID="copilot-$(date +%s)-$$-$RANDOM"
+    SESSION_ID="copilot-$(date +%s)-$RANDOM"
     log_debug "Unknown event type, generated ID: $SESSION_ID"
 fi
 
@@ -113,7 +129,7 @@ esac
 
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-MACHINE=$(hostname -s)
+MACHINE=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
 AGENT="copilot-cli"
 
 PAYLOAD=$(jq -n \

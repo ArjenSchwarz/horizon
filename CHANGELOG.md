@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Copilot hook session ID persistence (`hooks/horizon-hook-copilot`):
+  - Session file now uses directory hash instead of PID to share session ID between session-start and session-end events
+  - Fixes issue where separate processes generated different session IDs, breaking session pairing
+- Kiro hook stdin reading (`hooks/horizon-hook-kiro`):
+  - Changed from piped read (which lost data in subshell) to temp file approach
+  - Ensures JSON payload is properly captured for session_id extraction
+
+### Changed
+
+- Log error prefix consistency (`hooks/horizon-hook-claude`):
+  - Added `[claude]` prefix to log_error function to match Copilot and Kiro hooks
+
+### Security
+
+- Secure file permissions for all hook scripts:
+  - Config directory now set to 700 permissions
+  - Log files now set to 600 permissions
+  - Prevents other users from reading sensitive configuration or logs
+
+### Added
+
+- Dependency validation in all hook scripts:
+  - Scripts now check for jq installation and log error if missing
+  - Prevents cryptic failures when required tools are not installed
+- Hostname fallback for container environments:
+  - All hooks now use `hostname -s || hostname || "unknown"` chain
+  - Prevents failures in containers where `hostname -s` may not work
+- Stale session file cleanup in Copilot hook:
+  - Automatically removes session files older than 24 hours
+  - Prevents accumulation from crashed or interrupted sessions
+
 ### Added
 
 - Devices widget in dashboard (`dashboard/index.html`, `dashboard/app.js`, `dashboard/styles.css`):

@@ -16,11 +16,22 @@ LOG_FILE="$HOME/.config/horizon/error.log"
 DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-prompt-start}"
 
-# Ensure config directory exists
+# Ensure config directory exists with secure permissions
 mkdir -p "$(dirname "$LOG_FILE")"
+chmod 700 "$(dirname "$LOG_FILE")" 2>/dev/null
+
+# Ensure log files have secure permissions
+touch "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+chmod 600 "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+
+# Check for required dependencies
+if ! command -v jq &> /dev/null; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [claude] jq is required but not installed" >> "$LOG_FILE" 2>/dev/null
+    exit 0
+fi
 
 log_error() {
-    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - $1" >> "$LOG_FILE"
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [claude] $1" >> "$LOG_FILE"
 }
 
 log_debug() {
@@ -83,7 +94,7 @@ log_debug "Project detected: $PROJECT"
 
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-MACHINE=$(hostname -s)
+MACHINE=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
 AGENT="claude-code"
 
 PAYLOAD=$(jq -n \

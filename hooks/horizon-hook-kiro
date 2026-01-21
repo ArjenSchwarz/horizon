@@ -16,8 +16,19 @@ LOG_FILE="$HOME/.config/horizon/error.log"
 DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
 EVENT_TYPE="${1:-prompt-start}"
 
-# Ensure config directory exists
+# Ensure config directory exists with secure permissions
 mkdir -p "$(dirname "$LOG_FILE")"
+chmod 700 "$(dirname "$LOG_FILE")" 2>/dev/null
+
+# Ensure log files have secure permissions
+touch "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+chmod 600 "$LOG_FILE" "$DEBUG_LOG_FILE" 2>/dev/null
+
+# Check for required dependencies
+if ! command -v jq &> /dev/null; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [kiro] jq is required but not installed" >> "$LOG_FILE" 2>/dev/null
+    exit 0
+fi
 
 log_error() {
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) - [kiro] $1" >> "$LOG_FILE"
@@ -30,14 +41,16 @@ log_debug() {
 log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
 # Kiro provides context through environment variables and stdin
-# Read stdin if available without consuming data prematurely
+# Read stdin directly into variable (with timeout to avoid blocking)
+# Using a temp file approach to avoid subshell issues with piped read
 HOOK_INPUT=""
-if timeout 0.2 cat <&0 2>/dev/null | read -r -d '' HOOK_INPUT; then
-    : # stdin was read successfully
-else
-    # No stdin or timeout, that's okay
-    HOOK_INPUT=""
+STDIN_TEMP=$(mktemp 2>/dev/null || echo "/tmp/horizon-kiro-stdin-$$")
+if timeout 0.2 cat > "$STDIN_TEMP" 2>/dev/null; then
+    if [[ -s "$STDIN_TEMP" ]]; then
+        HOOK_INPUT=$(cat "$STDIN_TEMP")
+    fi
 fi
+rm -f "$STDIN_TEMP" 2>/dev/null
 
 # Extract session_id from stdin JSON if available, otherwise generate one
 SESSION_ID=""
@@ -126,7 +139,7 @@ log_debug "Mapped $EVENT_TYPE -> $HORIZON_EVENT"
 
 # Build payload
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-MACHINE=$(hostname -s)
+MACHINE=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
 AGENT="kiro-cli"
 
 PAYLOAD=$(jq -n \
