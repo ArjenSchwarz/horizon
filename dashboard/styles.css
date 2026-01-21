@@ -170,11 +170,6 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-.machine-name {
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
-}
-
 .sync-status {
   display: flex;
   align-items: center;
