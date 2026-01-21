@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Dashboard header logo now uses `horizon-logo.webp` image instead of text "H" icon (`dashboard/index.html`, `dashboard/styles.css`)
+
 ### Added
 
 - Week navigation in dashboard (`dashboard/app.js`, `dashboard/index.html`, `dashboard/styles.css`):
