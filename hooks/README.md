@@ -48,21 +48,33 @@ cp config.example.json ~/.config/horizon/config.json
 
 ### 2. Install Hook Scripts
 
-Copy the hook scripts to your local bin directory:
+**Option A: Using Make (Recommended)**
+
+From the repository root, run:
+
+```bash
+make install-hooks
+```
+
+This installs all hook scripts to `~/.local/bin/` and makes them executable.
+
+**Option B: Manual Installation**
+
+Copy individual hook scripts to your local bin directory:
 
 ```bash
 mkdir -p ~/.local/bin
 
 # For Claude Code
-cp horizon-hook-claude ~/.local/bin/
+cp hooks/horizon-hook-claude ~/.local/bin/
 chmod +x ~/.local/bin/horizon-hook-claude
 
 # For GitHub Copilot CLI
-cp horizon-hook-copilot ~/.local/bin/
+cp hooks/horizon-hook-copilot ~/.local/bin/
 chmod +x ~/.local/bin/horizon-hook-copilot
 
 # For Kiro
-cp horizon-hook-kiro ~/.local/bin/
+cp hooks/horizon-hook-kiro ~/.local/bin/
 chmod +x ~/.local/bin/horizon-hook-kiro
 ```
 

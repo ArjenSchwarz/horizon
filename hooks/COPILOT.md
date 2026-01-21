@@ -45,6 +45,16 @@ Replace with your actual API URL and key:
 
 ### 2. Install Hook Script
 
+**Option A: Using Make (Recommended)**
+
+From the repository root, install all hook scripts:
+
+```bash
+make install-hooks
+```
+
+**Option B: Manual Installation**
+
 Copy the hook script to your local bin directory:
 
 ```bash
