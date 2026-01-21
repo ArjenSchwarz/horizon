@@ -65,24 +65,27 @@ chmod +x ~/.local/bin/horizon-hook-copilot
 
 ### 3. Configure Copilot Hooks
 
-Create a `hooks.json` file in your project directory or a global location:
+**Global Setup (Recommended)**
 
-**Per-Project Setup** (recommended):
-
-```bash
-# In your project root
-cp hooks/copilot-hooks.json.example hooks.json
-```
-
-**Global Setup**:
+Create the global hooks directory and copy the configuration:
 
 ```bash
-# Create a global hooks directory
-mkdir -p ~/.config/copilot-cli
-cp hooks/copilot-hooks.json.example ~/.config/copilot-cli/hooks.json
+mkdir -p ~/.github/hooks
+cp hooks/copilot-hooks.json.example ~/.github/hooks/project-hooks.json
 ```
 
-The `hooks.json` file should contain:
+Copilot CLI automatically loads hooks from `~/.github/hooks/project-hooks.json`, so no additional flags are needed.
+
+**Per-Project Setup**
+
+For project-specific hooks, create the hooks file in your repository:
+
+```bash
+mkdir -p .github/hooks
+cp hooks/copilot-hooks.json.example .github/hooks/project-hooks.json
+```
+
+The hooks file should contain:
 
 ```json
 {
@@ -102,25 +105,6 @@ The `hooks.json` file should contain:
     ]
   }
 }
-```
-
-### 4. Enable Hooks in Copilot CLI
-
-When running Copilot CLI, use the `--hooks` flag to specify your hooks file:
-
-```bash
-# Per-project
-copilot --hooks ./hooks.json
-
-# Global
-copilot --hooks ~/.config/copilot-cli/hooks.json
-```
-
-You can also set an environment variable to avoid typing this every time:
-
-```bash
-# Add to your ~/.bashrc or ~/.zshrc
-export COPILOT_HOOKS_FILE=~/.config/copilot-cli/hooks.json
 ```
 
 ## How It Works
@@ -193,8 +177,8 @@ First, check the hook activity log to see if hooks are being invoked:
 tail ~/.config/horizon/hook.log
 ```
 
-- Verify the `--hooks` flag is being used or `COPILOT_HOOKS_FILE` is set
-- Check that the hooks.json path is correct and file exists
+- Check that hooks file exists: `ls ~/.github/hooks/project-hooks.json` or `.github/hooks/project-hooks.json`
+- Verify the hooks file has valid JSON syntax
 - Ensure the hook script has execute permissions: `ls -l ~/.local/bin/horizon-hook-copilot`
 
 ### API Errors
