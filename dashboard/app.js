@@ -596,10 +596,9 @@ function renderAgentsChart() {
  * Render agent x project list (requirements 12.3, 12.4)
  */
 function renderAgentProjectList() {
-  const agents = state.weeklyStats.agents || [];
-  const projects = state.weeklyStats.projects || [];
+  const agentProjects = state.weeklyStats.agent_projects || [];
 
-  if (agents.length === 0) {
+  if (agentProjects.length === 0) {
     elements.agentProjectList.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">-</div>
@@ -609,20 +608,16 @@ function renderAgentProjectList() {
     return;
   }
 
-  // Build agent-to-projects mapping from available data
-  // Note: Full implementation would require additional API data
-  const html = agents.map((agent) => {
-    const config = getAgentConfig(agent.name);
-
-    // For now, show all projects since we don't have per-agent project data
-    const projectNames = projects.map((p) => p.name).join(', ');
+  const html = agentProjects.map((entry) => {
+    const config = getAgentConfig(entry.agent);
+    const projectNames = entry.projects.join(', ');
 
     return `
       <div class="agent-project-row">
         <div class="agent-project-icon ${escapeHtml(config.class)}">${escapeHtml(config.initial)}</div>
         <div class="agent-project-name">${escapeHtml(config.label)}</div>
         <div class="agent-project-projects">${escapeHtml(projectNames) || '--'}</div>
-        <div class="agent-project-hours">${agent.hours.toFixed(1)}h</div>
+        <div class="agent-project-hours">${entry.hours.toFixed(1)}h</div>
       </div>
     `;
   }).join('');

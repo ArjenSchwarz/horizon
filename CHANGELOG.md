@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Agent x Project widget now shows only the projects each agent actually worked on (`dashboard/app.js`, `src/services/statistics.ts`, `src/types.ts`):
+  - Previously displayed all projects for every agent (cartesian product)
+  - Added `AgentProjectSummary` interface mapping agent to their specific projects
+  - Added `calculateAgentProjectBreakdown()` function to derive agent-project relationships from sessions
+  - Added `agent_projects` field to `WeeklyStats` API response
+  - Updated dashboard to consume the new `agent_projects` data
+
+### Fixed
+
 - Copilot hook session ID persistence (`hooks/horizon-hook-copilot`):
   - Session file now uses directory hash instead of PID to share session ID between session-start and session-end events
   - Fixes issue where separate processes generated different session IDs, breaking session pairing
