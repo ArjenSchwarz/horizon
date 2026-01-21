@@ -615,7 +615,7 @@ function renderSessionDetail() {
   }
 
   const html = state.projectSessions.map((session) => {
-    const startTime = formatTime(session.start);
+    const startTime = formatDateTime(session.start);
     const endTime = session.end ? formatTime(session.end) : 'now';
     const duration = session.end
       ? `${Math.round(session.active_minutes)}m`
@@ -912,6 +912,21 @@ function formatTime(isoString) {
     minute: '2-digit',
     hour12: false,
   });
+}
+
+/**
+ * Format date and time from ISO string (e.g., "Mon 14:30")
+ */
+function formatDateTime(isoString) {
+  if (!isoString) return '--';
+  const date = new Date(isoString);
+  const day = date.toLocaleDateString('en-US', { weekday: 'short' });
+  const time = date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  return `${day} ${time}`;
 }
 
 /**

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Session detail panel now shows day of week with time (e.g., "Mon 14:30 - 15:45") instead of just time (`dashboard/app.js`)
+  - Added `formatDateTime()` function for date+time formatting
+  - Sessions spanning a week now clearly indicate which day they occurred on
+
 - Dashboard sizing reduced to fit more content above the fold (`dashboard/styles.css`):
   - Dashboard section gap reduced (xl → lg)
   - Stat card padding and font size reduced (2rem → 1.75rem)
