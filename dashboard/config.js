@@ -5,6 +5,10 @@
  * The API key is stored in browser localStorage after initial setup.
  */
 const CONFIG = {
+  // Demo mode - set to true to use mock data without an API
+  // Useful for local development and UI testing
+  DEMO_MODE: false,
+
   // API endpoint URL - update this for your deployment
   // For local development: 'http://localhost:8787'
   // For Cloudflare Workers: 'https://horizon-api.your-subdomain.workers.dev'

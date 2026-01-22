@@ -22,6 +22,14 @@ const PROJECT_COLORS = [
   '#ec4899', // pink
 ];
 
+// Device colors for visual distinction
+const DEVICE_COLORS = [
+  '#6366f1', // indigo
+  '#14b8a6', // teal
+  '#f59e0b', // amber
+  '#ec4899', // pink
+];
+
 // Agent styling configuration
 const AGENT_CONFIG = {
   'claude-code': { class: 'claude', initial: 'C', label: 'Claude' },
@@ -57,6 +65,15 @@ async function init() {
   cacheElements();
   setupEventListeners();
 
+  // Demo mode bypasses API key requirement
+  if (CONFIG.DEMO_MODE) {
+    state.apiKey = 'demo-mode';
+    showDashboard();
+    await loadWeeklyStats();
+    render();
+    return;
+  }
+
   if (!state.apiKey) {
     showApiKeySetup();
     return;
@@ -90,13 +107,13 @@ function cacheElements() {
   // Stats
   elements.statThisWeekLabel = document.querySelector('.stat-card:nth-child(1) .stat-label');
   elements.statThisWeek = document.getElementById('stat-this-week');
-  elements.statComparison = document.getElementById('stat-comparison');
   elements.statTodayLabel = document.querySelector('.stat-card:nth-child(2) .stat-label');
   elements.statTodayHours = document.getElementById('stat-today-hours');
   elements.statTodaySessions = document.getElementById('stat-today-sessions');
   elements.statTopAgent = document.getElementById('stat-top-agent');
   elements.statTopAgentHours = document.getElementById('stat-top-agent-hours');
-  elements.statStreak = document.getElementById('stat-streak');
+  elements.statTopProject = document.getElementById('stat-top-project');
+  elements.statTopProjectHours = document.getElementById('stat-top-project-hours');
 
   // Week navigation
   elements.weekNav = document.getElementById('week-nav');
@@ -244,6 +261,16 @@ function showDashboard() {
  */
 async function loadWeeklyStats() {
   updateSyncStatus('syncing');
+
+  // Demo mode uses mock data
+  if (CONFIG.DEMO_MODE) {
+    state.weeklyStats = generateMockWeeklyStats(state.currentWeekStart);
+    state.lastSync = new Date();
+    state.isOffline = false;
+    updateSyncStatus('synced');
+    render();
+    return;
+  }
 
   try {
     const tzOffset = getTimezoneOffset();
@@ -417,16 +444,6 @@ function renderStatsCards() {
   // This Week value
   elements.statThisWeek.textContent = formatHours(stats.total_hours);
 
-  // Comparison to last week (requirement 8.4)
-  const vsLastWeek = stats.comparison?.vs_last_week || 0;
-  if (vsLastWeek !== 0) {
-    const sign = vsLastWeek > 0 ? '+' : '';
-    elements.statComparison.textContent = `${sign}${vsLastWeek.toFixed(1)}hrs vs last week`;
-    elements.statComparison.className = vsLastWeek < 0 ? 'stat-comparison negative' : 'stat-comparison';
-  } else {
-    elements.statComparison.textContent = '--';
-  }
-
   // Today / First day of week
   let dayData;
   if (onCurrentWeek) {
@@ -451,8 +468,15 @@ function renderStatsCards() {
     elements.statTopAgentHours.textContent = '-- hrs';
   }
 
-  // Streak
-  elements.statStreak.textContent = stats.streak_days || 0;
+  // Top Project
+  const topProject = stats.projects?.[0];
+  if (topProject) {
+    elements.statTopProject.textContent = topProject.name;
+    elements.statTopProjectHours.textContent = `${topProject.hours.toFixed(1)} hrs`;
+  } else {
+    elements.statTopProject.textContent = '--';
+    elements.statTopProjectHours.textContent = '-- hrs';
+  }
 }
 
 /**
@@ -571,6 +595,14 @@ async function selectProject(projectName) {
 
   state.selectedProject = projectName;
   renderProjectsList();
+
+  // Demo mode uses mock sessions
+  if (CONFIG.DEMO_MODE) {
+    const mockData = generateMockSessions(projectName, state.currentWeekStart);
+    state.projectSessions = mockData.sessions || [];
+    renderSessionDetail();
+    return;
+  }
 
   // Load sessions for this project
   try {
@@ -733,14 +765,15 @@ function renderDevicesPanel() {
 
   const maxHours = Math.max(...machines.map((m) => m.hours), 1);
 
-  const html = machines.map((machine) => {
+  const html = machines.map((machine, index) => {
     const widthPercent = (machine.hours / maxHours) * 100;
+    const color = DEVICE_COLORS[index % DEVICE_COLORS.length];
 
     return `
       <div class="device-bar-row">
         <div class="device-bar-name">${escapeHtml(machine.name)}</div>
         <div class="device-bar-container">
-          <div class="device-bar" style="width: ${widthPercent}%;"></div>
+          <div class="device-bar" style="width: ${widthPercent}%; background-color: ${color};"></div>
         </div>
         <div class="device-bar-value">${machine.hours.toFixed(1)}h</div>
         <div class="device-bar-percent">${machine.percentage}%</div>
