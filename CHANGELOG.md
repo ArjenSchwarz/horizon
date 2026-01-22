@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Demo mode for local dashboard development (`dashboard/config.js`, `dashboard/mock-data.js`, `dashboard/app.js`):
+  - Set `CONFIG.DEMO_MODE = true` to use mock data without an API
+  - `mock-data.js` generates realistic weekly stats, daily breakdowns, sessions, agents, and machines
+  - Bypasses API key requirement when demo mode is enabled
+  - Useful for UI testing and local development without deploying the API
+- Top Project stat card in dashboard header (`dashboard/index.html`, `dashboard/app.js`):
+  - Shows the project with the most hours this week
+  - Displays project name and hours spent
+- Distinct colors for devices in Devices panel (`dashboard/app.js`):
+  - Each device now has a unique color (indigo, teal, amber, pink)
+  - Improves visual distinction when multiple devices are shown
+
+### Removed
+
+- Streak stat card from dashboard header (`dashboard/index.html`, `dashboard/app.js`):
+  - Removed gamification element per user preference
+- Week comparison text from This Week stat card (`dashboard/index.html`, `dashboard/app.js`):
+  - Removed "vs last week" comparison line
+
 ### Changed
 
 - Session detail panel now shows day of week with time (e.g., "Mon 14:30 - 15:45") instead of just time (`dashboard/app.js`)
