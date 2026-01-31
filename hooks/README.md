@@ -15,8 +15,10 @@ Horizon tracks your coding sessions by receiving events from AI coding assistant
 | Assistant | CLI Support | IDE Support | Documentation |
 |-----------|-------------|-------------|---------------|
 | Claude Code | ✅ Full | ❌ N/A | [claude-settings.json.example](claude-settings.json.example) |
-| GitHub Copilot CLI | ✅ Full | ⚠️ Limited | [COPILOT.md](COPILOT.md) |
+| GitHub Copilot CLI | ⚠️ Manual | ⚠️ Limited | [COPILOT.md](COPILOT.md) |
 | Kiro | ✅ Full | ✅ Full | [KIRO.md](KIRO.md) |
+
+> **Note**: GitHub Copilot CLI hooks have known issues. Use manual invocation via an orchestrator - see [COPILOT.md](COPILOT.md#manual-invocation-orchestrator-integration).
 
 ## Quick Start
 

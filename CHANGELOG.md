@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Manual invocation documentation for GitHub Copilot CLI hook (`hooks/COPILOT.md`):
+  - Orchestrator integration section with wrapper script example
+  - Explains session pairing via temp files
+- Updated support table in `hooks/README.md` to reflect Copilot CLI manual invocation requirement
+
 - Demo mode for local dashboard development (`dashboard/config.js`, `dashboard/mock-data.js`, `dashboard/app.js`):
   - Set `CONFIG.DEMO_MODE = true` to use mock data without an API
   - `mock-data.js` generates realistic weekly stats, daily breakdowns, sessions, agents, and machines
