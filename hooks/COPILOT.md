@@ -121,6 +121,35 @@ The hook script automatically:
 5. Logs all activity to `~/.config/horizon/hook.log` for debugging
 6. Logs errors to `~/.config/horizon/error.log` without blocking Copilot
 
+## Manual Invocation (Orchestrator Integration)
+
+Since Copilot CLI hooks have known issues and don't support global configuration, you can invoke the hook script manually from an orchestrator or wrapper script.
+
+### Basic Usage
+
+```bash
+# At the start of a prompt/interaction
+~/.local/bin/horizon-hook-copilot session-start
+
+# At the end of a response/interaction
+~/.local/bin/horizon-hook-copilot session-end
+```
+
+### Orchestrator Example
+
+Wrap your Copilot CLI invocation:
+
+```bash
+#!/bin/bash
+~/.local/bin/horizon-hook-copilot session-start
+gh copilot "$@"
+~/.local/bin/horizon-hook-copilot session-end
+```
+
+### Session Pairing
+
+The hook script automatically pairs `session-start` and `session-end` events using a temp file keyed by working directory. This ensures the same session ID is used for both events even when called as separate processes.
+
 ## Verification
 
 ### Test the Hook
