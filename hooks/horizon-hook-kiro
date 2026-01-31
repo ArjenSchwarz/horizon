@@ -14,6 +14,7 @@
 CONFIG_FILE="$HOME/.config/horizon/config.json"
 LOG_FILE="$HOME/.config/horizon/error.log"
 DEBUG_LOG_FILE="$HOME/.config/horizon/hook.log"
+SESSION_FILE="$HOME/.config/horizon/kiro-session"
 EVENT_TYPE="${1:-prompt-start}"
 
 # Ensure config directory exists with secure permissions
@@ -40,26 +41,35 @@ log_debug() {
 
 log_debug "Hook invoked: event_type=$EVENT_TYPE"
 
-# Kiro provides context through environment variables and stdin
-# Read stdin directly into variable (with timeout to avoid blocking)
-# Using a temp file approach to avoid subshell issues with piped read
-HOOK_INPUT=""
-STDIN_TEMP=$(mktemp 2>/dev/null || echo "/tmp/horizon-kiro-stdin-$$")
-if timeout 0.2 cat > "$STDIN_TEMP" 2>/dev/null; then
-    if [[ -s "$STDIN_TEMP" ]]; then
-        HOOK_INPUT=$(cat "$STDIN_TEMP")
-    fi
-fi
-rm -f "$STDIN_TEMP" 2>/dev/null
-
-# Extract session_id from stdin JSON if available, otherwise generate one
+# Session ID management:
+# - On prompt-start: generate a new session ID and save it to file
+# - On response-end: read the session ID from file
+# - On session-end: read the session ID from file and delete it
 SESSION_ID=""
-if [[ -n "$HOOK_INPUT" ]]; then
-    SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/dev/null)
-fi
 
+case "$EVENT_TYPE" in
+    prompt-start|userPromptSubmit)
+        # Generate new session ID and persist it
+        SESSION_ID="kiro-$(date +%s)-$$-$RANDOM"
+        echo "$SESSION_ID" > "$SESSION_FILE"
+        chmod 600 "$SESSION_FILE" 2>/dev/null
+        ;;
+    response-end|stop|session-end)
+        # Read existing session ID from file
+        if [[ -f "$SESSION_FILE" ]]; then
+            SESSION_ID=$(cat "$SESSION_FILE")
+        fi
+        # If session-end, clean up the file
+        if [[ "$EVENT_TYPE" == "session-end" ]]; then
+            rm -f "$SESSION_FILE"
+        fi
+        ;;
+esac
+
+# Fallback if no session ID available
 if [[ -z "$SESSION_ID" ]]; then
-    SESSION_ID="kiro-$(date +%s)-$$-$RANDOM"
+    SESSION_ID="kiro-orphan-$(date +%s)-$$"
+    log_debug "No session file found, using fallback session ID"
 fi
 
 log_debug "Session ID: $SESSION_ID"

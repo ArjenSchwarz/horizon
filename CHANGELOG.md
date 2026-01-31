@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Kiro hook session ID persistence across events (`hooks/horizon-hook-kiro`):
+  - Session ID now persists to file instead of relying on stdin
+  - Ensures `prompt-start` and `response-end` events share the same session ID
+
 ### Added
 
 - Demo mode for local dashboard development (`dashboard/config.js`, `dashboard/mock-data.js`, `dashboard/app.js`):
