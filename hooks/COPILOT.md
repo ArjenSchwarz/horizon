@@ -142,7 +142,7 @@ Wrap your Copilot CLI invocation:
 ```bash
 #!/bin/bash
 ~/.local/bin/horizon-hook-copilot session-start
-gh copilot "$@"
+copilot "$@"
 ~/.local/bin/horizon-hook-copilot session-end
 ```
 
